@@ -7,6 +7,7 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="makeit-robot" />
+        <module name="robot_simulator_voiture" />
       </profile>
     </annotationProcessing>
   </component>
