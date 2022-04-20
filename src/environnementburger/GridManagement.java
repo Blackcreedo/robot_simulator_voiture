@@ -13,11 +13,16 @@ import model.Situated;
 import mqtt.Message;
 
 import java.awt.Color;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+
+import javax.imageio.ImageIO;
 
 
 public class GridManagement implements SimulationComponent {
@@ -133,6 +138,36 @@ public class GridManagement implements SimulationComponent {
 		if(display == 1) { 
 			createColorGrid(displaywidth, displayheight, displaytitle);			
 		}						
+	}
+
+	public void initRoad(){
+		File file = new File("C:\\Users\\Elouan\\Documents\\IntelliJ\\robot_simulator_voiture\\src\\resources\\Road50.png");
+		try
+		{
+			BufferedImage img = ImageIO.read(file);
+			int x = img.getWidth();
+			int y = img.getHeight();
+			int value = 0;
+			for(int i=0; i<x; i++){
+				for(int j=0; j<x; j++){
+					value = img.getRGB(i,j);
+					if(value!=-1){
+						int[] pos = {j,i};
+						Obstacle obs = new Obstacle(pos);
+						grid.putSituatedComponent(obs);
+					}
+				}
+			}
+			if(display == 1) {
+				createColorGrid(displaywidth, displayheight, displaytitle);
+			}
+		}
+		catch (IOException e)
+		{
+			String workingDir = System.getProperty("user.dir");
+			System.out.println("Current working directory : " + workingDir);
+			e.printStackTrace();
+		}
 	}
 
 	public String getName() {
@@ -318,7 +353,7 @@ public class GridManagement implements SimulationComponent {
     	    columns = Integer.parseInt((String)content.get("columns"));
     	    grid = new Grid(rows, columns, seed);
 			grid.initEmpty();
-			init();
+			initRoad();
         }
         /*else if(topic.contains("burger_5/position")) {
         	int x1 = Integer.parseInt((String)content.get("x1"));
