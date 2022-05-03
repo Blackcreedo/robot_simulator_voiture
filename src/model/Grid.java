@@ -79,6 +79,7 @@ public class Grid {
     public void initEmpty(){
         for(int i=0; i < rows;i++){
             for(int j=0; j < columns; j++){
+                //grid[i][j]=new EmptyValuedCell(j,i,1);
                 grid[i][j]=new EmptyCell(j,i);
             }
         }
@@ -236,7 +237,8 @@ public class Grid {
 	public Situated removeSituatedComponent(int x, int y) {
 		if (validCoordinate(x, y) && grid[y][x].getComponentType() != ComponentType.empty) {
 			Situated sc = grid[y][x];
-			grid[y][x] = new EmptyCell(x, y);
+			//grid[y][x] = new EmptyValuedCell(x, y, 1);
+            grid[y][x] = new EmptyCell(x,y);
             if(sc.getComponentType() == ComponentType.robot)
                 nbRobots--;
             else if(sc.getComponentType() == ComponentType.obstacle)

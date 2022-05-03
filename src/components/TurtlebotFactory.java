@@ -1,14 +1,11 @@
 package components;
 
+import burger.*;
 import mqtt.Message;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import burger.SmartTurtlebot;
-import burger.RandomTurtlebot;
-import burger.RealTurtlebot;
-import burger.Orientation;
 import mqtt.Message;
 
 import java.util.HashMap;
@@ -164,7 +161,7 @@ public class TurtlebotFactory implements SimulationComponent {
 	    	if(debug == 1) {
 	    		System.out.println("Create real robot");
 	    	}
-	    	turtle = new RealTurtlebot(id, name, seed, field, clientMqtt, debug);
+	    	turtle = new SmartTurtlebot(id,name,seed,field,clientMqtt,debug);
 	    	if(debug==2 && sttime != null) {
 	    		turtle.setLog(sttime);
 	    	}
@@ -208,6 +205,7 @@ public class TurtlebotFactory implements SimulationComponent {
         	jo.put("field",t.getField()+"");
         	jo.put("x",t.getX()+"");
         	jo.put("y",t.getY()+"");
+			jo.put("id",t.getId()+"");
         	clientMqtt.publish("configuration/robot/grid", jo.toJSONString());
         }
     }

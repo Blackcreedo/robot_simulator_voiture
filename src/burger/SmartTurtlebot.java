@@ -1,15 +1,10 @@
 package burger;
 
-import model.ComponentType;
-import model.Situated;
+import model.*;
 import components.Turtlebot;
-import model.EmptyCell;
-import model.UnknownCell;
-import model.Grid;
 import mqtt.Message;
 import java.util.Random;
-import model.ObstacleDescriptor;
-import model.RobotDescriptor;
+
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import java.util.List;
@@ -20,6 +15,8 @@ import java.io.IOException;
 public class SmartTurtlebot extends Turtlebot{
 	protected Random rnd;
 	protected Grid grid;
+	protected int xGoal, yGoal;
+
 
 	public SmartTurtlebot(int id, String name, int seed, int field, Message clientMqtt, int debug) {
 		super(id, name, seed, field, clientMqtt, debug);
@@ -28,7 +25,7 @@ public class SmartTurtlebot extends Turtlebot{
 
 	protected void init() {
 		clientMqtt.subscribe("inform/grid/init");
-    	clientMqtt.subscribe(name + "/position/init");		
+    	clientMqtt.subscribe(name + "/position/init");
 		clientMqtt.subscribe(name + "/grid/init");		
 		clientMqtt.subscribe(name + "/grid/update");		
 		clientMqtt.subscribe(name + "/action");		
@@ -70,7 +67,8 @@ public class SmartTurtlebot extends Turtlebot{
         					s = new ObstacleDescriptor(to);
         				} else {
         					//System.out.println("Add EmptyCell " + xo + ", " + yo);
-        					s = new EmptyCell(xo,yo);
+        					//s = new EmptyValuedCell(xo,yo, 1);
+							s = new EmptyCell(xo,yo);
         				}
         				grid.forceSituatedComponent(s);
     				}
@@ -115,10 +113,13 @@ public class SmartTurtlebot extends Turtlebot{
         		}
         		else {
         			//System.out.println("Add EmptyCell " + xo + ", " + yo);
-        			s = new EmptyCell(xo,yo);
+        			//s = new EmptyValuedCell(xo,yo, 1);
+					s = new EmptyCell(xo,yo);
         		}
         		grid.forceSituatedComponent(s);
       		}
+			xGoal = Integer.parseInt((String)content.get("xGoal"));
+			yGoal = Integer.parseInt((String)content.get("yGoal"));
         }
 	}
 
@@ -171,9 +172,25 @@ public class SmartTurtlebot extends Turtlebot{
 		String actionr = "move_forward";
 		String result = x + "," + y + "," + orientation + "," + grid.getCellsToString(y,x) + ",";
 		for(int i = 0; i < step; i++) {
+			Integer distanceMin=Integer.MAX_VALUE;
+			Integer distanceTest;
+			Integer jmin=null;
+			EmptyCell emptyCellMin=null;
 			EmptyCell[] ec = grid.getAdjacentEmptyCell(x,y);
+			for (int j=0; j<ec.length; j++) {
+				EmptyCell ecTest = ec[j];
+				if (ecTest != null) {
+					distanceTest = Math.abs(ecTest.getX()-this.xGoal)+ Math.abs(ecTest.getY()-this.yGoal);
+					if (distanceTest<distanceMin) {
+						distanceMin=distanceTest;
+						emptyCellMin=ecTest;
+						jmin=j;
+					}
+				}
+			}
+			System.out.println(emptyCellMin);
 			if(orientation == Orientation.up) {
-				if(ec[3] != null) {
+				if(jmin==3) {
 					moveForward();
 				}
 				else { 
@@ -189,7 +206,7 @@ public class SmartTurtlebot extends Turtlebot{
 				}
 			}
 			else if(orientation == Orientation.down) {
-				if(ec[2] != null) {
+				if(jmin==2) {
 					moveForward();
 				}
 				else {
@@ -205,7 +222,7 @@ public class SmartTurtlebot extends Turtlebot{
 				}
 			}
 			else if(orientation == Orientation.right) {
-				if(ec[1] != null) { 
+				if(jmin==1) {
 					moveForward();
 				}
 				else {
@@ -221,7 +238,7 @@ public class SmartTurtlebot extends Turtlebot{
 				}
 			}
 			else if(orientation == Orientation.left) {
-				if(ec[0] != null) {
+				if(jmin ==0) {
 					moveForward();
 				}
 				else {

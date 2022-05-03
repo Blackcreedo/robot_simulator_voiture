@@ -1,14 +1,10 @@
 package burger;
 
-import model.ComponentType;
-import model.Situated;
+import model.*;
 import components.Turtlebot;
-import model.EmptyCell;
-import model.UnknownCell;
 import mqtt.Message;
 import java.util.Random;
-import model.ObstacleDescriptor;
-import model.RobotDescriptor;
+
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import java.util.List;
@@ -100,7 +96,7 @@ public class RandomTurtlebot extends Turtlebot{
         			grid.add(new ObstacleDescriptor(to));
         		} else {
         			//System.out.println("Add EmptyCell " + xo + ", " + yo);
-        			grid.add(new EmptyCell(xo,yo));
+        			grid.add(new EmptyValuedCell(xo,yo,1));
     			}
     		}
       		if(debug == 1) {

@@ -135,13 +135,13 @@ public class GridManagement implements SimulationComponent {
 			Obstacle obs = new Obstacle(pos);
 			grid.putSituatedComponent(obs);			
 		}
-		if(display == 1) { 
+		if(display == 1) {
 			createColorGrid(displaywidth, displayheight, displaytitle);			
 		}						
 	}
 
 	public void initRoad(){
-		File file = new File("C:\\Users\\Elouan\\Documents\\IntelliJ\\robot_simulator_voiture\\src\\resources\\Road50.png");
+		File file = new File("C:\\Users\\jean-\\Documents\\Mines_2A\\Defi\\Simulations\\robot_simulator_voiture\\src\\resources\\Road50.png");
 		try
 		{
 			BufferedImage img = ImageIO.read(file);
@@ -218,7 +218,18 @@ public class GridManagement implements SimulationComponent {
 
 		//System.out.println("field " + field + " x " + x + " y " + y);
 		//System.out.println("xm " + xm + " xM " + xM + " ym " + ym + " yM "+ yM);
-
+		for (int i=0; i<grid.getRows(); i++) {
+			for(int j = 0; j<grid.getColumns(); j++) {
+				Situated s = grid.getCell(j,i);
+				if(s.getComponentType()==ComponentType.obstacle) {
+					JSONObject jo = new JSONObject();
+					jo.put("type", s.getComponentType()+"");
+					jo.put("x", s.getX()+"");
+					jo.put("y", s.getY()+"");
+					gt.add(jo);
+				}
+			}
+		}
 		for(int i = xm; i <= xM; i++){
 			for(int j = ym; j <= yM; j++){
 				if(i != x || j != y) {
@@ -242,7 +253,6 @@ public class GridManagement implements SimulationComponent {
 		jsongrid.put("y", y);
 		jsongrid.put("field", field);
 		jsongrid.put("cells", gt);
-		
 		return jsongrid;
 	}
 	
@@ -306,13 +316,19 @@ public class GridManagement implements SimulationComponent {
 			if(debug == 1) {
 				grid.display(goals);
 			}
-        }        
-        else if (topic.contains("configuration/robot/grid")) {
+        } else if (topic.contains("configuration/robot/grid")) {
             String nameR = (String)content.get("name");
             int fieldr = Integer.parseInt((String)content.get("field"));
             int xr = Integer.parseInt((String)content.get("x"));
             int yr = Integer.parseInt((String)content.get("y"));
             JSONObject jo = gridToJSONObject(xr, yr, fieldr);
+			int id = Integer.parseInt((String)content.get("id"));
+			for (Goal goal : this.goals) {
+				if (goal.getRobot()==-id) {
+					jo.put("xGoal",goal.getX()+"");
+					jo.put("yGoal",goal.getY()+"");
+				}
+			}
             clientMqtt.publish(nameR+"/grid/init", jo.toJSONString());
         }
         else if (topic.contains("robot/grid")) {
@@ -353,7 +369,8 @@ public class GridManagement implements SimulationComponent {
     	    columns = Integer.parseInt((String)content.get("columns"));
     	    grid = new Grid(rows, columns, seed);
 			grid.initEmpty();
-			initRoad();
+			//initRoad();
+			init();
         }
         /*else if(topic.contains("burger_5/position")) {
         	int x1 = Integer.parseInt((String)content.get("x1"));
