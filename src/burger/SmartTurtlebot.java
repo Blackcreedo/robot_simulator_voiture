@@ -3,6 +3,9 @@ package burger;
 import model.*;
 import components.Turtlebot;
 import mqtt.Message;
+
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Random;
 
 import org.json.simple.JSONArray;
@@ -16,6 +19,9 @@ public class SmartTurtlebot extends Turtlebot{
 	protected Random rnd;
 	protected Grid grid;
 	protected int xGoal, yGoal;
+
+	protected ArrayList<aStarNode> openList;
+	protected ArrayList<aStarNode> closedList;
 
 
 	public SmartTurtlebot(int id, String name, int seed, int field, Message clientMqtt, int debug) {
@@ -331,6 +337,9 @@ public class SmartTurtlebot extends Turtlebot{
 		//System.out.println("MOVE MOVE " + xo + " " + yo + " --> " + x + " " + y);
 		clientMqtt.publish("robot/nextPosition", robotj.toJSONString());
 	}
+
+
+
 
 	public void moveBackward() {
 		
