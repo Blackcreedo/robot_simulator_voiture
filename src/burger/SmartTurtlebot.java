@@ -96,6 +96,8 @@ public class SmartTurtlebot extends Turtlebot{
         	y = Integer.parseInt((String)content.get("y"));
         }
         else if (topic.contains(name+"/grid/init")) {
+			this.xGoal = Integer.parseInt((String)content.get("xGoal"));
+			this.yGoal = Integer.parseInt((String)content.get("yGoal"));
       		JSONArray ja = (JSONArray)content.get("cells");
       		for(int i=0; i < ja.size(); i++) {
       			JSONObject jo = (JSONObject)ja.get(i);
@@ -107,8 +109,7 @@ public class SmartTurtlebot extends Turtlebot{
 				if(typeCell.equals("obstacle")){
 					//System.out.println("Add ObstacleCell");
         			s = new ObstacleDescriptor(to);
-        		}
-        		else if(typeCell.equals("robot")){
+        		} else if(typeCell.equals("robot")){
         			//System.out.println("Add RobotCell");
         			int idr = Integer.parseInt((String)jo.get("id"));
         			String namer = (String)jo.get("name");
@@ -116,16 +117,13 @@ public class SmartTurtlebot extends Turtlebot{
         		} else if (typeCell.equals("empty")) {
 					double value = (Double)jo.get("value");
 					s = new EmptyValuedCell(xo, yo, value);
-				}
-        		else {
+				} else {
         			//System.out.println("Add EmptyCell " + xo + ", " + yo);
         			//s = new EmptyValuedCell(xo,yo, 1);
 					s = new EmptyValuedCell(xo,yo,1);
         		}
         		grid.forceSituatedComponent(s);
       		}
-			xGoal = Integer.parseInt((String)content.get("xGoal"));
-			yGoal = Integer.parseInt((String)content.get("yGoal"));
         }
 	}
 
