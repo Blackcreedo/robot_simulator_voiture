@@ -113,11 +113,14 @@ public class SmartTurtlebot extends Turtlebot{
         			int idr = Integer.parseInt((String)jo.get("id"));
         			String namer = (String)jo.get("name");
         			s = new RobotDescriptor(to, idr, namer);
-        		}
+        		} else if (typeCell.equals("empty")) {
+					double value = (Double)jo.get("value");
+					s = new EmptyValuedCell(xo, yo, value);
+				}
         		else {
         			//System.out.println("Add EmptyCell " + xo + ", " + yo);
         			//s = new EmptyValuedCell(xo,yo, 1);
-					s = new EmptyCell(xo,yo);
+					s = new EmptyValuedCell(xo,yo,1);
         		}
         		grid.forceSituatedComponent(s);
       		}

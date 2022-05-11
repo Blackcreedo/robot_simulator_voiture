@@ -1,15 +1,9 @@
 package environnementburger;
 
 import components.SimulationComponent;
-import model.ComponentType;
+import model.*;
 import components.Obstacle;
-import model.EmptyCell;
-import model.UnknownCell;
-import model.RobotDescriptor;
 import main.TestAppli;
-import model.Grid;
-import model.Goal;
-import model.Situated;
 import mqtt.Message;
 
 import java.awt.Color;
@@ -141,7 +135,7 @@ public class GridManagement implements SimulationComponent {
 	}
 
 	public void initRoad(){
-		File file = new File("C:\\Users\\jean-\\Documents\\Mines_2A\\Defi\\Simulations\\robot_simulator_voiture\\src\\resources\\Road50.png");
+		File file = new File("C:\\Users\\jean-\\Documents\\Mines_2A\\Defi\\Simulations\\robot_simulator_voiture\\src\\resources\\test10.png");
 		try
 		{
 			BufferedImage img = ImageIO.read(file);
@@ -226,6 +220,15 @@ public class GridManagement implements SimulationComponent {
 					jo.put("type", s.getComponentType()+"");
 					jo.put("x", s.getX()+"");
 					jo.put("y", s.getY()+"");
+					gt.add(jo);
+				}
+				if(s.getComponentType()==ComponentType.empty) {
+					EmptyValuedCell emptyValuedCell = (EmptyValuedCell) s;
+					JSONObject jo = new JSONObject();
+					jo.put("type", s.getComponentType()+"");
+					jo.put("x", s.getX()+"");
+					jo.put("y", s.getY()+"");
+					jo.put("value",emptyValuedCell.getValue());
 					gt.add(jo);
 				}
 			}
@@ -370,7 +373,7 @@ public class GridManagement implements SimulationComponent {
     	    grid = new Grid(rows, columns, seed);
 			grid.initEmpty();
 			//initRoad();
-			init();
+			initRoad();
         }
         /*else if(topic.contains("burger_5/position")) {
         	int x1 = Integer.parseInt((String)content.get("x1"));

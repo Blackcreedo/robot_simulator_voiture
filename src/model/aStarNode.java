@@ -1,6 +1,5 @@
 package model;
 
-import com.sun.org.apache.bcel.internal.classfile.EmptyVisitor;
 
 public class aStarNode {
     private EmptyValuedCell node;
