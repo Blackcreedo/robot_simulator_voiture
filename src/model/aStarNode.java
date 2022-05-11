@@ -55,7 +55,7 @@ public class aStarNode {
 
     @Override
     public String toString(){
-        return "[Node : " + this.node.toString() + "evaluation : " + this.evaluation +
-                "pathCost" + this.pathCost + "Action : " + "parent : " + this.parent +"]";
+        return "[Node : " + this.node.toString() + " evaluation : " + this.evaluation +
+                " pathCost : " + this.pathCost + " parent : " + this.parent +"]";
     }
 }
