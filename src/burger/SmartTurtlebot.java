@@ -20,9 +20,6 @@ public class SmartTurtlebot extends Turtlebot{
 	protected Grid grid;
 	protected int xGoal, yGoal;
 
-	protected ArrayList<aStarNode> openList;
-	protected ArrayList<aStarNode> closedList;
-
 
 	public SmartTurtlebot(int id, String name, int seed, int field, Message clientMqtt, int debug) {
 		super(id, name, seed, field, clientMqtt, debug);

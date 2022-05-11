@@ -1,16 +1,18 @@
 package model;
 
-import java.util.ArrayList;
+import burger.SmartTurtlebot;
+
+import java.util.*;
 
 public class aStarSearch {
 
-    ArrayList<aStarNode> openList;
-    ArrayList<aStarNode> closedList;
+    LinkedList<aStarNode> openList;
+    LinkedList<aStarNode> closedList;
 
-    public ArrayList<aStarNode> expand(aStarNode node, Grid grid, int xGoal, int yGoal) {
+    public LinkedList<aStarNode> expand(aStarNode node, Grid grid, int xGoal, int yGoal) {
         int x = node.getNode().x;
         int y = node.getNode().y;
-        ArrayList<aStarNode> nodes = new ArrayList<>();
+        LinkedList<aStarNode> nodes = new LinkedList<>();
         EmptyCell[] ec = grid.getAdjacentEmptyCell(x,y);
         for (int i=0; i<4; i++) {
             if (ec[i] != null) { //EmptyValuedCell node, aStarNode parent, double heuristique
@@ -22,4 +24,54 @@ public class aStarSearch {
         }
         return nodes;
     }
+
+    public ArrayList<aStarNode> solve(Grid grid, int x, int y, int xGoal, int yGoal) {
+        aStarNode initNode = new aStarNode(new EmptyValuedCell(x,y,1));
+        aStarNode solution = null;
+        openList = new LinkedList<>();
+        closedList = new LinkedList<>();
+
+        LinkedList<aStarNode> expandNodes;
+        initNode.setEvaluation(Math.abs(x-xGoal)+Math.abs(y-yGoal));
+
+        closedList.add(initNode);
+
+        expandNodes = expand(initNode, grid, xGoal, yGoal);
+        openList.addAll(expandNodes);
+
+        Collections.sort(openList, new SortByEvaluation());
+
+        boolean done = false;
+
+        while(!done) {
+            if (openList.isEmpty()) {
+                System.out.println("No more nodes in open List");
+                done=true;
+            } else {
+                aStarNode node = openList.pop();
+                if (node.getNode().getX()==xGoal && node.getNode().getY() == yGoal) {
+                    System.out.println("goalReached");
+                    solution = node;
+                    done=true;
+                } else {
+                    expandNodes = expand(node, grid, xGoal, yGoal);
+                    openList.addAll(expandNodes);
+                    Collections.sort(openList, new SortByEvaluation());
+                }
+            }
+        }
+
+        ArrayList<aStarNode> path = new ArrayList<>();
+        aStarNode current = solution;
+
+        while(current.getParent()!=null) {
+            path.add(0,current);
+            current=current.getParent();
+        }
+        path.add(0,current);
+        return path;
+
+    }
+
+
 }
