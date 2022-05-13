@@ -183,8 +183,8 @@ public class SmartTurtlebot extends Turtlebot{
 	}
 
 	public void move(int step) {
-		aStarSearch aStarSearch = new aStarSearch();
-		aStarSearch.solve(grid,x,y,xGoal,yGoal);
+		//aStarSearch aStarSearch = new aStarSearch();
+		//aStarSearch.solve(grid,x,y,xGoal,yGoal);
 		String actionr = "move_forward";
 		String result = x + "," + y + "," + orientation + "," + grid.getCellsToString(y,x) + ",";
 		for(int i = 0; i < step; i++) {

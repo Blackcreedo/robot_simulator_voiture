@@ -161,7 +161,7 @@ public class TurtlebotFactory implements SimulationComponent {
 	    	if(debug == 1) {
 	    		System.out.println("Create real robot");
 	    	}
-	    	turtle = new SmartTurtlebot(id,name,seed,field,clientMqtt,debug);
+	    	turtle = new RandomTurtlebot(id,name,seed,field,clientMqtt,debug);
 	    	if(debug==2 && sttime != null) {
 	    		turtle.setLog(sttime);
 	    	}
@@ -169,7 +169,7 @@ public class TurtlebotFactory implements SimulationComponent {
 	    	if(debug == 1) {
 	    		System.out.println("Create simulated robot");
 	    	}
-	    	turtle = new SmartTurtlebot(id, name, seed, field, clientMqtt, debug);
+	    	turtle = new RandomTurtlebot(id, name, seed, field, clientMqtt, debug);
 	    	//turtle = new RandomTurtlebot(id, name, seed, field, clientMqtt, debug);
 	    	if(debug==2 && sttime != null) {
 	    		turtle.setLog(sttime);
