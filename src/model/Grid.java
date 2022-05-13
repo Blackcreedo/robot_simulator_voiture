@@ -234,6 +234,20 @@ public class Grid {
 		}
 		return false;
 	}
+
+    public boolean swichSituatedComponent(int ox, int oy, int dx, int dy) {
+        Situated sco = grid[oy][ox];
+        Situated sc = grid[dy][dx];
+        if (sc != null) {
+            sco.setLocation(dx,dy);
+
+            sc.setLocation(ox,oy);
+            putSituatedComponent(sco);
+            grid[sc.getY()][sc.getX()] = sc;
+            return true;
+        }
+        return false;
+    }
 	
 	public boolean putSituatedComponent(Situated sc) {		
 		if (validCoordinate(sc.getX(), sc.getY()) && grid[sc.getY()][sc.getX()].getComponentType() == ComponentType.empty) {
