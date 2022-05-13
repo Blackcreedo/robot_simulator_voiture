@@ -204,7 +204,6 @@ public class SmartTurtlebot extends Turtlebot{
 					}
 				}
 			}
-			System.out.println(emptyCellMin);
 			if(orientation == Orientation.up) {
 				if(jmin==3) {
 					moveForward();
