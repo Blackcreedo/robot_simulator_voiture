@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import static java.lang.Math.max;
 import static java.lang.Math.min;
 
 /* This model class defines the grid components */
@@ -30,16 +31,16 @@ public class Grid {
             l = rnd.nextInt(rows);
             c = rnd.nextInt(columns);
             if (grid[l][c].getComponentType() == ComponentType.obstacle) {
-                if(grid[Math.min(l+1,rows)][min(c+1,columns)].getComponentType() == ComponentType.empty) {
+                if(grid[Math.min(l+1,rows-1)][min(c+1,columns-1)].getComponentType() == ComponentType.empty) {
                     locationNotFound = false;
                 }
-                if(grid[Math.max(l-1,0)][min(c+1,columns)].getComponentType() == ComponentType.empty){
+                else if(grid[max(l-1,0)][min(c+1,columns-1)].getComponentType() == ComponentType.empty){
                     locationNotFound = false;
                 }
-                if(grid[min(l+1,rows)][Math.max(c-1,0)].getComponentType() == ComponentType.empty){
+                else if(grid[min(l+1,rows-1)][max(c-1,0)].getComponentType() == ComponentType.empty){
                     locationNotFound = false;
                 }
-                if(grid[Math.max(l-1,0)][Math.max(c-1,0)].getComponentType() == ComponentType.empty){
+                else if(grid[max(l-1,0)][max(c-1,0)].getComponentType() == ComponentType.empty){
                     locationNotFound = false;
                 }
             }
@@ -51,8 +52,8 @@ public class Grid {
         int l=-1, c = -1;
         boolean locationNotFound = true; 
         while (locationNotFound) {
-            l = rnd.nextInt(rows);
-            c = rnd.nextInt(columns);
+            l = rnd.nextInt(rows-1);
+            c = rnd.nextInt(columns-1);
             if (grid[l][c].getComponentType() == ComponentType.empty) {
                 locationNotFound = false;
                 //grid[l][c] = nb; 
