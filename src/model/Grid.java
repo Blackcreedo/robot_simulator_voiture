@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import static java.lang.Math.min;
+
 /* This model class defines the grid components */
 public class Grid {
     private Situated[][] grid;    
@@ -21,7 +23,30 @@ public class Grid {
         nbObstacles = 0;
         rnd = new Random(seed);
     }
-
+    public int[] locateGoal(){
+        int l=-1, c=-1;
+        boolean locationNotFound = true;
+        while(locationNotFound){
+            l = rnd.nextInt(rows);
+            c = rnd.nextInt(columns);
+            if (grid[l][c].getComponentType() == ComponentType.obstacle) {
+                if(grid[Math.min(l+1,rows)][min(c+1,columns)].getComponentType() == ComponentType.empty) {
+                    locationNotFound = false;
+                }
+                if(grid[Math.max(l-1,0)][min(c+1,columns)].getComponentType() == ComponentType.empty){
+                    locationNotFound = false;
+                }
+                if(grid[min(l+1,rows)][Math.max(c-1,0)].getComponentType() == ComponentType.empty){
+                    locationNotFound = false;
+                }
+                if(grid[Math.max(l-1,0)][Math.max(c-1,0)].getComponentType() == ComponentType.empty){
+                    locationNotFound = false;
+                }
+            }
+        }
+        int [] result = {c,l};
+        return result;
+    }
     public int[] locate() {
         int l=-1, c = -1;
         boolean locationNotFound = true; 

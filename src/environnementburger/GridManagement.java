@@ -309,9 +309,10 @@ public class GridManagement implements SimulationComponent {
 				}				
 			}
 			for (int i = 2; i < nbRobots+2; i++) {
-				int[] pos = grid.locate();
+				int[] pos = grid.locateGoal();
 				// ec = (EmptyCell)grid.getCell(pos[1], pos[0]);
 				goals.add(new Goal(pos[0],pos[1],-1*i));
+				grid.forceSituatedComponent(new EmptyValuedCell(pos[0], pos[1],1));
 				if(display == 1) {
 					cg.setBlockColor(pos[0], pos[1], colorgoal);
 					cg.refresh();
