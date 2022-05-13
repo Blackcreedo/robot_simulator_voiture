@@ -136,7 +136,7 @@ public class GridManagement implements SimulationComponent {
 	}
 
 	public void initRoad(){
-		File file = new File("C:\\Users\\jean-\\Documents\\Mines_2A\\Defi\\Simulations\\robot_simulator_voiture\\src\\resources\\road10.png");
+		File file = new File("src\\resources\\road10.png");
 		try
 		{
 			BufferedImage img = ImageIO.read(file);
