@@ -215,26 +215,53 @@ public class GridManagement implements SimulationComponent {
 		//System.out.println("xm " + xm + " xM " + xM + " ym " + ym + " yM "+ yM);
 		for (int i=0; i<grid.getRows(); i++) {
 			for(int j = 0; j<grid.getColumns(); j++) {
-				Situated s = grid.getCell(j,i);
-				if(s.getComponentType()==ComponentType.obstacle) {
+				Situated s = grid.getCell(i,j);
+				if (i==y && j==x) {
+
+				} else if (i>=ym && i<=yM && y>=xm && y<=xM) {
 					JSONObject jo = new JSONObject();
 					jo.put("type", s.getComponentType()+"");
+					if(s.getComponentType() == ComponentType.robot) {
+						RobotDescriptor rd = (RobotDescriptor)s;
+						jo.put("name", rd.getName());
+						jo.put("id", rd.getId()+"");
+					} else if (s.getComponentType()==ComponentType.empty) {
+						EmptyValuedCell emptyValuedCell = (EmptyValuedCell)s;
+						jo.put("value", emptyValuedCell.getValue());
+					}
 					jo.put("x", s.getX()+"");
 					jo.put("y", s.getY()+"");
 					gt.add(jo);
-				}
-				if(s.getComponentType()==ComponentType.empty) {
-					EmptyValuedCell emptyValuedCell = (EmptyValuedCell) s;
-					JSONObject jo = new JSONObject();
-					jo.put("type", s.getComponentType()+"");
-					jo.put("x", s.getX()+"");
-					jo.put("y", s.getY()+"");
-					jo.put("value",emptyValuedCell.getValue());
-					gt.add(jo);
+				} else {
+					if (s.getComponentType() == ComponentType.obstacle) {
+						JSONObject jo = new JSONObject();
+						jo.put("type", s.getComponentType() + "");
+						jo.put("x", s.getX() + "");
+						jo.put("y", s.getY() + "");
+						gt.add(jo);
+					}
+					if (s.getComponentType() == ComponentType.empty) {
+						EmptyValuedCell emptyValuedCell = (EmptyValuedCell) s;
+						JSONObject jo = new JSONObject();
+						jo.put("type", s.getComponentType() + "");
+						jo.put("x", s.getX() + "");
+						jo.put("y", s.getY() + "");
+						jo.put("value", emptyValuedCell.getValue());
+						gt.add(jo);
+					}
+					if (s.getComponentType() == ComponentType.robot) {
+						double value = 1.0;
+						JSONObject jo = new JSONObject();
+						jo.put("type", ComponentType.empty+"");
+						jo.put("x", s.getX()+"");
+						jo.put("y",s.getY()+"");
+						jo.put("value", value); /////////A CHANGER AAAAAAAAAAAAAAAAAA
+						gt.add(jo);
+					}
 				}
 			}
 		}
-		for(int i = xm; i <= xM; i++){
+		/*for(int i = xm; i <= xM; i++){
 			for(int j = ym; j <= yM; j++){
 				if(i != x || j != y) {
 					Situated s = grid.getCell(j,i);
@@ -251,7 +278,7 @@ public class GridManagement implements SimulationComponent {
 					gt.add(jo);
 				}
 			}
-		}
+		}*/
 
 		jsongrid.put("x", x);
 		jsongrid.put("y", y);
@@ -383,8 +410,8 @@ public class GridManagement implements SimulationComponent {
     	    columns = Integer.parseInt((String)content.get("columns"));
     	    grid = new Grid(rows, columns, seed);
 			grid.initEmpty();
-			//initRoad();
 			initRoad();
+			//init();
         }
         /*else if(topic.contains("burger_5/position")) {
         	int x1 = Integer.parseInt((String)content.get("x1"));
