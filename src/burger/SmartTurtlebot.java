@@ -82,8 +82,18 @@ public class SmartTurtlebot extends Turtlebot{
         		grid.display();
         	}
         } else if (topic.contains(name+"/action")) {
-    	    int stepr = Integer.parseInt((String)content.get("step"));
-        	move(stepr);
+			if(x==xGoal && y==yGoal){
+				goalReached = true;
+				JSONObject removeRobot = new JSONObject();
+				removeRobot.put("id", id + "");
+				removeRobot.put("xGoal", xGoal + "");
+				removeRobot.put("yGoal", yGoal + "");
+				clientMqtt.publish("robot/remove", removeRobot.toJSONString());
+			}
+			if(!goalReached){
+				int stepr = Integer.parseInt((String)content.get("step"));
+				move(stepr);
+			}
         } else if (topic.contains("inform/grid/init")) {
         	int rows = Integer.parseInt((String)content.get("rows"));
         	int columns = Integer.parseInt((String)content.get("columns"));

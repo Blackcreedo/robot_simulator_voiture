@@ -53,7 +53,8 @@ public class GridManagement implements SimulationComponent {
 		clientMqtt.subscribe("configuration/display");	
 		clientMqtt.subscribe("configuration/debug");	
 		clientMqtt.subscribe("configuration/robot/grid");	
-		clientMqtt.subscribe("robot/grid");	
+		clientMqtt.subscribe("robot/grid");
+		clientMqtt.subscribe("robot/remove");
 		clientMqtt.subscribe("environment/grid");
 	}
 
@@ -333,7 +334,16 @@ public class GridManagement implements SimulationComponent {
 				}
 			}
             clientMqtt.publish(nameR+"/grid/init", jo.toJSONString());
-        }
+        } else if (topic.contains("robot/remove")) {
+			int xGoal = Integer.parseInt((String)content.get("xGoal"));
+			int yGoal = Integer.parseInt((String)content.get("yGoal"));
+			for(Goal goal: goals){
+				if(goal.getX()==xGoal && goal.getY()==yGoal) goals.remove(goal);
+			}
+			grid.removeSituatedComponent(xGoal,yGoal);
+			cg.setBlockColor(xGoal, yGoal, colorother);
+			cg.refresh();
+		}
         else if (topic.contains("robot/grid")) {
             String nameR = (String)content.get("name");
             int fieldr = Integer.parseInt((String)content.get("field"));
