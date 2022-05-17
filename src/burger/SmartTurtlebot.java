@@ -71,13 +71,13 @@ public class SmartTurtlebot extends Turtlebot{
         				} else {
         					//System.out.println("Add EmptyCell " + xo + ", " + yo);
         					//s = new EmptyValuedCell(xo,yo, 1);
-							s = new EmptyCell(xo,yo);
+							s = new EmptyValuedCell(xo,yo,1);
         				}
         				grid.forceSituatedComponent(s);
     				}
     			}
     		}
-      		if(debug == 1) {
+      		if(debug == 1 && this.id!=3) {
 		   		System.out.println("---- " + name + " ----");
         		grid.display();
         	}
@@ -154,7 +154,8 @@ public class SmartTurtlebot extends Turtlebot{
 	}
 
 	public void randomOrientation() {
-		double d = Math.random();
+		Random generator = new Random(0);
+		double d = generator.nextDouble();
 		Orientation oldo = orientation;
 		if(d < 0.25) {
 			if(orientation != Orientation.up) 
@@ -185,6 +186,7 @@ public class SmartTurtlebot extends Turtlebot{
 	public void move(int step) {
 		//aStarSearch aStarSearch = new aStarSearch();
 		//aStarSearch.solve(grid,x,y,xGoal,yGoal);
+		Random generator = new Random();
 		String actionr = "move_forward";
 		String result = x + "," + y + "," + orientation + "," + grid.getCellsToString(y,x) + ",";
 		for(int i = 0; i < step; i++) {
@@ -210,7 +212,7 @@ public class SmartTurtlebot extends Turtlebot{
 				}
 				else { 
 					//randomOrientation();
-					double d = Math.random();
+					double d = generator.nextDouble();
 					if(d < 0.5) {
 						moveLeft(1);
 						actionr = "turn_left";
@@ -226,7 +228,7 @@ public class SmartTurtlebot extends Turtlebot{
 				}
 				else {
 					//randomOrientation();
-					double d = Math.random();
+					double d = generator.nextDouble();
 					if(d < 0.5) {
 						moveLeft(1);
 						actionr = "turn_left";
@@ -242,7 +244,7 @@ public class SmartTurtlebot extends Turtlebot{
 				}
 				else {
 					//randomOrientation();
-					double d = Math.random();
+					double d = generator.nextDouble();
 					if(d < 0.5) {
 						moveLeft(1);
 						actionr = "turn_left";
@@ -258,7 +260,7 @@ public class SmartTurtlebot extends Turtlebot{
 				}
 				else {
 					//randomOrientation();
-					double d = Math.random();
+					double d = generator.nextDouble();
 					if(d < 0.5) {
 						moveLeft(1);
 						actionr = "turn_left";

@@ -199,7 +199,18 @@ public class GridManagement implements SimulationComponent {
 	
 	@SuppressWarnings("unchecked")
 	public JSONObject gridToJSONObject(int x, int y, int field) {
-			
+		/*x = 4;
+		y=7;
+		this.grid.removeSituatedComponent(6,2);
+		this.grid.removeSituatedComponent(4,7);
+		this.grid.removeSituatedComponent(7,8);
+		RobotDescriptor robot4 = new RobotDescriptor(new int[]{4,6},4,"burger_4");
+		RobotDescriptor robot3 = new RobotDescriptor(new int[]{5,2},3,"burger_3");
+		RobotDescriptor robot2 = new RobotDescriptor(new int[]{4,7},2,"burger_2");
+		this.grid.forceSituatedComponent(robot4);
+		this.grid.forceSituatedComponent(robot3);
+		this.grid.forceSituatedComponent(robot2);*/
+
 		// size of the the complete grid
 		JSONObject jsongrid = new JSONObject();
 		
@@ -213,12 +224,12 @@ public class GridManagement implements SimulationComponent {
 
 		//System.out.println("field " + field + " x " + x + " y " + y);
 		//System.out.println("xm " + xm + " xM " + xM + " ym " + ym + " yM "+ yM);
-		for (int i=0; i<grid.getRows(); i++) {
-			for(int j = 0; j<grid.getColumns(); j++) {
-				Situated s = grid.getCell(i,j);
-				if (i==y && j==x) {
+		for (int i=0; i<grid.getColumns(); i++) {
+			for(int j = 0; j<grid.getRows(); j++) {
+				Situated s = grid.getCell(j,i);
+				if (i==x && j==y) {
 
-				} else if (i>=ym && i<=yM && y>=xm && y<=xM) {
+				} else if (i>=xm && i<=xM && j>=ym && j<=yM) {
 					JSONObject jo = new JSONObject();
 					jo.put("type", s.getComponentType()+"");
 					if(s.getComponentType() == ComponentType.robot) {
@@ -284,6 +295,7 @@ public class GridManagement implements SimulationComponent {
 		jsongrid.put("y", y);
 		jsongrid.put("field", field);
 		jsongrid.put("cells", gt);
+		System.out.printf(jsongrid.toJSONString());
 		return jsongrid;
 	}
 	
@@ -311,11 +323,11 @@ public class GridManagement implements SimulationComponent {
 			int xor = Integer.parseInt((String)content.get("xo"));
 			int yor = Integer.parseInt((String)content.get("yo"));
 			//System.out.println("MOVE MOVE " + xor + " " + yor + " --> " + xr + " " + yr);
-			//grid.moveSituatedComponent(xor,yor,xr,yr);
-			grid.swichSituatedComponent(xor,yor,xr,yr);
+			grid.moveSituatedComponent(xor,yor,xr,yr);
+			/*grid.swichSituatedComponent(xor,yor,xr,yr);
 			if(grid.getCell(yor,xor).getComponentType() == ComponentType.empty){
 				((EmptyValuedCell) grid.getCell(yor,xor)).setValue(((EmptyValuedCell) grid.getCell(yor,xor)).getValue()+1);
-			}
+			}*/
 			if(display == 1) {
 				//cg.setBlockColor(xor, yor, colorother);				
 				if(isGoal(xor,yor)<0) {

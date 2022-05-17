@@ -101,6 +101,17 @@ public class Grid {
         }
     }
 
+    @Override
+    public String toString() {
+        String result = "";
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < columns; j++)
+                result=result+"   " + getCell(i, j).display();
+            result = result + "\n";
+        }
+        return result;
+    }
+
     public void initEmpty(){
         for(int i=0; i < rows;i++){
             for(int j=0; j < columns; j++){
