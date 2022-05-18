@@ -198,29 +198,46 @@ public class GridManagement implements SimulationComponent {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public JSONObject gridToJSONObject(int x, int y, int field) {
-		/*x = 4;
-		y=7;
-		this.grid.removeSituatedComponent(6,2);
-		this.grid.removeSituatedComponent(4,7);
-		this.grid.removeSituatedComponent(7,8);
-		RobotDescriptor robot4 = new RobotDescriptor(new int[]{4,6},4,"burger_4");
-		RobotDescriptor robot3 = new RobotDescriptor(new int[]{5,2},3,"burger_3");
-		RobotDescriptor robot2 = new RobotDescriptor(new int[]{4,7},2,"burger_2");
-		this.grid.forceSituatedComponent(robot4);
-		this.grid.forceSituatedComponent(robot3);
-		this.grid.forceSituatedComponent(robot2);*/
+	public JSONObject gridToJSONObject(ArrayList<Integer[]> positions , int field) {
 
+		Integer[][] researchMatrix = new Integer[grid.getRows()][grid.getColumns()];
+
+		for (int k = 0; k<positions.size(); k++) {
+			int x =positions.get(k)[0];
+			int y = positions.get(k)[1];
+			int xm = Math.max(x-field,0);
+			int xM = Math.min(x+field,grid.getColumns()-1);
+			int ym = Math.max(y-field,0);
+			int yM = Math.min(y+field,grid.getRows()-1);
+
+			for (int i = 0; i<grid.getRows(); i++) {
+				for (int j = 0; j < grid.getColumns(); j++) {
+					researchMatrix[i][j] = 0;
+				}
+			}
+
+			for (int i = 0; i<grid.getRows(); i++){
+				for (int j = 0; j<grid.getColumns(); j++) {
+					if (j==x && i==y) {
+						//
+					} else if (j>=xm && j<=xM && i>=ym && i<=yM) {
+						researchMatrix[i][j]=1;
+					}
+				}
+			}
+		}
+		int x = positions.get(0)[0];
+		int y = positions.get(0)[1];
 		// size of the the complete grid
 		JSONObject jsongrid = new JSONObject();
 		
 		// obstacles definition
 		
 		JSONArray gt = new JSONArray();
-		int xm = Math.max(x-field,0);
+		/*int xm = Math.max(x-field,0);
 		int xM = Math.min(x+field,grid.getColumns()-1);
 		int ym = Math.max(y-field,0);
-		int yM = Math.min(y+field,grid.getRows()-1);
+		int yM = Math.min(y+field,grid.getRows()-1);*/
 
 		//System.out.println("field " + field + " x " + x + " y " + y);
 		//System.out.println("xm " + xm + " xM " + xM + " ym " + ym + " yM "+ yM);
@@ -229,7 +246,7 @@ public class GridManagement implements SimulationComponent {
 				Situated s = grid.getCell(j,i);
 				if (i==x && j==y) {
 
-				} else if (i>=xm && i<=xM && j>=ym && j<=yM) {
+				} else if (researchMatrix[j][i]==1) {
 					JSONObject jo = new JSONObject();
 					jo.put("type", s.getComponentType()+"");
 					if(s.getComponentType() == ComponentType.robot) {
@@ -272,25 +289,6 @@ public class GridManagement implements SimulationComponent {
 				}
 			}
 		}
-		/*for(int i = xm; i <= xM; i++){
-			for(int j = ym; j <= yM; j++){
-				if(i != x || j != y) {
-					Situated s = grid.getCell(j,i);
-					//System.out.println("j " + j + " i " + i + " cell " + s);
-					JSONObject jo = new JSONObject();
-					jo.put("type", s.getComponentType()+"");
-					if(s.getComponentType() == ComponentType.robot) {
-						RobotDescriptor rd = (RobotDescriptor)s;
-						jo.put("name", rd.getName());	
-						jo.put("id", rd.getId()+"");	
-					}
-					jo.put("x", s.getX()+"");
-					jo.put("y", s.getY()+"");
-					gt.add(jo);
-				}
-			}
-		}*/
-
 		jsongrid.put("x", x);
 		jsongrid.put("y", y);
 		jsongrid.put("field", field);
@@ -369,7 +367,11 @@ public class GridManagement implements SimulationComponent {
             int fieldr = Integer.parseInt((String)content.get("field"));
             int xr = Integer.parseInt((String)content.get("x"));
             int yr = Integer.parseInt((String)content.get("y"));
-            JSONObject jo = gridToJSONObject(xr, yr, fieldr);
+
+			ArrayList<Integer[]> positions = new ArrayList<>();
+			positions.add(new Integer[]{xr,yr});
+
+            JSONObject jo = gridToJSONObject(positions, fieldr);
 			int id = Integer.parseInt((String)content.get("id"));
 			for (Goal goal : this.goals) {
 				if (goal.getRobot()==-id) {
@@ -393,7 +395,11 @@ public class GridManagement implements SimulationComponent {
             int fieldr = Integer.parseInt((String)content.get("field"));
             int xr = Integer.parseInt((String)content.get("x"));
             int yr = Integer.parseInt((String)content.get("y"));
-            JSONObject jo = gridToJSONObject(xr, yr, fieldr);
+
+
+			ArrayList<Integer[]> positions = new ArrayList<>();
+			positions.add(new Integer[]{xr,yr});
+            JSONObject jo = gridToJSONObject(positions, fieldr);
             clientMqtt.publish(nameR+"/grid/update", jo.toJSONString());
         }
 		else if (topic.contains("robot/nextPosition")) {
