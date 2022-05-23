@@ -50,7 +50,7 @@ public class aStarSearch {
             } else {
                 aStarNode node = openList.pop();
                 if (node.getNode().getX()==xGoal && node.getNode().getY() == yGoal) {
-                    System.out.println("goalReached");
+                    System.out.println("astar goalReached");
                     solution = node;
                     done=true;
                 } else {

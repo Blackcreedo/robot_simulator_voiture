@@ -19,6 +19,7 @@ public class SmartTurtlebot extends Turtlebot{
 	protected Random rnd;
 	protected Grid grid;
 	protected int xGoal, yGoal;
+    protected ArrayList<aStarNode> path = null;
 
 
 	public SmartTurtlebot(int id, String name, int seed, int field, Message clientMqtt, int debug) {
@@ -183,27 +184,44 @@ public class SmartTurtlebot extends Turtlebot{
 		}
 	}
 
+	public void newPath() {
+		aStarSearch search = new aStarSearch();
+		this.path = search.solve(this.grid, this.x, this.y, this.xGoal, this.yGoal);
+	}
+
 	public void move(int step) {
-		//aStarSearch aStarSearch = new aStarSearch();
-		//aStarSearch.solve(grid,x,y,xGoal,yGoal);
+		if (this.path==null) {
+			newPath();
+			this.path.remove(0); //current node
+		}
 		Random generator = new Random();
 		String actionr = "move_forward";
 		String result = x + "," + y + "," + orientation + "," + grid.getCellsToString(y,x) + ",";
 		for(int i = 0; i < step; i++) {
-			Integer distanceMin=Integer.MAX_VALUE;
-			Integer distanceTest;
+			//Integer distanceMin=Integer.MAX_VALUE;
+			//Integer distanceTest;
 			Integer jmin=null;
 			EmptyCell emptyCellMin=null;
 			EmptyCell[] ec = grid.getAdjacentEmptyCell(x,y);
+
+
+			aStarNode nextNode = this.path.get(0);
 			for (int j=0; j<ec.length; j++) {
 				EmptyCell ecTest = ec[j];
 				if (ecTest != null) {
-					distanceTest = Math.abs(ecTest.getX()-this.xGoal)+ Math.abs(ecTest.getY()-this.yGoal);
+
+					if (ecTest.getX()==nextNode.getNode().getX() && ecTest.getY()==nextNode.getNode().getY()) {
+						jmin=j;
+					}
+
+
+
+					/*distanceTest = Math.abs(ecTest.getX()-this.xGoal)+ Math.abs(ecTest.getY()-this.yGoal);
 					if (distanceTest<distanceMin) {
 						distanceMin=distanceTest;
 						emptyCellMin=ecTest;
 						jmin=j;
-					}
+					}*/
 				}
 			}
 			if(orientation == Orientation.up) {
@@ -319,6 +337,7 @@ public class SmartTurtlebot extends Turtlebot{
 	}
 
 	public void moveForward() {
+		this.path.remove(0);
 		int xo = x;
 		int yo = y;
 		if(orientation == Orientation.up) {
