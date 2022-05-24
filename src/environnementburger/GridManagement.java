@@ -353,7 +353,7 @@ public class GridManagement implements SimulationComponent {
 				int[] pos = grid.locateGoal();
 				// ec = (EmptyCell)grid.getCell(pos[1], pos[0]);
 				goals.add(new Goal(pos[0],pos[1],-1*i));
-				grid.forceSituatedComponent(new EmptyValuedCell(pos[0], pos[1],1));
+				grid.forceSituatedComponent(new EmptyValuedCell(pos[0], pos[1],4)); //It's a bit long to park
 				if(display == 1) {
 					cg.setBlockColor(pos[0], pos[1], colorgoal);
 					cg.refresh();
@@ -386,8 +386,10 @@ public class GridManagement implements SimulationComponent {
 			for(Goal goal: goals){
 				if(goal.getX()==xGoal && goal.getY()==yGoal) goals.remove(goal);
 			}
+			int[] pos = {xGoal,yGoal};
 			grid.removeSituatedComponent(xGoal,yGoal);
-			cg.setBlockColor(xGoal, yGoal, colorother);
+			grid.forceSituatedComponent(new Obstacle(pos));
+			cg.setBlockColor(xGoal, yGoal, colorobstacle);
 			cg.refresh();
 		}
         else if (topic.contains("robot/grid")) {
