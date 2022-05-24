@@ -65,17 +65,15 @@ public class SmartTurtlebot extends Turtlebot{
         		} else {
         			Situated sg = grid.getCell(yo,xo);
         			Situated s;
-        			if(sg.getComponentType() == ComponentType.unknown) {
-        				if(typeCell.equals("obstacle")){
-							//System.out.println("Add ObstacleCell");
-        					s = new ObstacleDescriptor(to);
-        				} else {
-        					//System.out.println("Add EmptyCell " + xo + ", " + yo);
-        					//s = new EmptyValuedCell(xo,yo, 1);
-							s = new EmptyValuedCell(xo,yo,1);
-        				}
-        				grid.forceSituatedComponent(s);
-    				}
+					if(typeCell.equals("obstacle")){
+						//System.out.println("Add ObstacleCell");
+						s = new ObstacleDescriptor(to);
+					} else {
+						//System.out.println("Add EmptyCell " + xo + ", " + yo);
+						//s = new EmptyValuedCell(xo,yo, 1);
+						s = new EmptyValuedCell(xo,yo,1);
+					}
+					grid.forceSituatedComponent(s);
     			}
     		}
       		if(debug == 1 && this.id!=3) {
