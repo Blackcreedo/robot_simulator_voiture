@@ -274,7 +274,7 @@ public class GridManagement implements SimulationComponent {
 						jo.put("type", s.getComponentType() + "");
 						jo.put("x", s.getX() + "");
 						jo.put("y", s.getY() + "");
-						jo.put("value", emptyValuedCell.getValue());
+						jo.put("value", 1.0);
 						gt.add(jo);
 					}
 					if (s.getComponentType() == ComponentType.robot) {

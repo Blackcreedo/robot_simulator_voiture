@@ -71,7 +71,8 @@ public class SmartTurtlebot extends Turtlebot{
 					} else {
 						//System.out.println("Add EmptyCell " + xo + ", " + yo);
 						//s = new EmptyValuedCell(xo,yo, 1);
-						s = new EmptyValuedCell(xo,yo,1);
+						double value = (Double)jo.get("value");
+						s = new EmptyValuedCell(xo,yo,value);
 					}
 					grid.forceSituatedComponent(s);
     			}
