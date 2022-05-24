@@ -22,6 +22,9 @@ public class SmartTurtlebot extends Turtlebot{
     protected ArrayList<aStarNode> path = null;
 	protected double cellValue = 1.0;
 
+	public double getCellValue() {
+		return cellValue;
+	}
 
 	public SmartTurtlebot(int id, String name, int seed, int field, Message clientMqtt, int debug) {
 		super(id, name, seed, field, clientMqtt, debug);
@@ -53,7 +56,7 @@ public class SmartTurtlebot extends Turtlebot{
            				if(sss != this){
 	           				RobotDescriptor rd = (RobotDescriptor)sss;
     	       				if(rd.getId() == idr) {
-        	   					grid.moveSituatedComponent(rd.getX(), rd.getY(), xo, yo);
+        	   					grid.moveSituatedComponent(rd.getX(), rd.getY(), xo, yo, rd.getValueCell());
            						findr = true;
            						break;
            					}
@@ -61,7 +64,8 @@ public class SmartTurtlebot extends Turtlebot{
            			}
            			if(!findr) {
 	           			String namer = (String)jo.get("name");
-    	    			grid.forceSituatedComponent(new RobotDescriptor(to, idr, namer));
+						double value = Double.parseDouble((String)jo.get("value"));
+    	    			grid.forceSituatedComponent(new RobotDescriptor(to, idr, namer, value));
     	    		}
         		} else {
         			Situated sg = grid.getCell(yo,xo);
@@ -105,6 +109,8 @@ public class SmartTurtlebot extends Turtlebot{
         else if (topic.contains(name+"/position/init")) {
       		x = Integer.parseInt((String)content.get("x"));
         	y = Integer.parseInt((String)content.get("y"));
+			double value = Double.parseDouble((String)content.get("value"));
+			this.cellValue = value;
         }
         else if (topic.contains(name+"/grid/init")) {
 			this.xGoal = Integer.parseInt((String)content.get("xGoal"));
@@ -124,7 +130,8 @@ public class SmartTurtlebot extends Turtlebot{
         			//System.out.println("Add RobotCell");
         			int idr = Integer.parseInt((String)jo.get("id"));
         			String namer = (String)jo.get("name");
-        			s = new RobotDescriptor(to, idr, namer);
+					double value = Double.parseDouble((String)jo.get("value"));
+        			s = new RobotDescriptor(to, idr, namer, value);
         		} else if (typeCell.equals("empty")) {
 					double value = (Double)jo.get("value");
 					s = new EmptyValuedCell(xo, yo, value);
@@ -360,7 +367,6 @@ public class SmartTurtlebot extends Turtlebot{
 		if(grid.getCell(x,y) instanceof EmptyValuedCell){
 			nextValue = ((EmptyValuedCell) grid.getCell(x,y)).getValue();
 		}
-		cellValue+=1;
 		grid.moveSituatedComponent(xo,yo,x,y,cellValue);
 		JSONObject robotj = new JSONObject();
 		robotj.put("name", name);

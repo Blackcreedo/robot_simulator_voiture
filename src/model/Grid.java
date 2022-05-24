@@ -1,5 +1,7 @@
 package model;
 
+import burger.SmartTurtlebot;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -119,6 +121,71 @@ public class Grid {
                 grid[i][j]=new EmptyValuedCell(j,i,1);
             }
         }
+    }
+    public EmptyCell[] getAdjacentEmptyRobotCell(int x, int y) {
+        EmptyCell[] ls = new EmptyCell[4];
+        ls[0] = null;
+        ls[1] = null;
+        ls[2] = null;
+        ls[3] = null;
+        Situated s;
+        if(y>0){
+            s = grid[y-1][x];
+            if(s.getComponentType() == ComponentType.empty) {
+                ls[0] = (EmptyCell)s;
+            } else if(s.getComponentType() == ComponentType.robot) {
+                EmptyValuedCell cell;
+                if (s instanceof RobotDescriptor) {
+                    cell = new EmptyValuedCell(s.getX(), s.getY(), ((RobotDescriptor)s).getValueCell());
+                } else {
+                    cell = new EmptyValuedCell(s.getX(), s.getY(), ((SmartTurtlebot) s).getCellValue());
+                }
+                ls[0] = (EmptyCell)cell;
+            }
+        }
+        if(y<rows-1) {
+            s = grid[y+1][x];
+            if(s.getComponentType() == ComponentType.empty) {
+                ls[1] = (EmptyCell)s;
+            } else if(s.getComponentType() == ComponentType.robot) {
+                EmptyValuedCell cell;
+                if (s instanceof RobotDescriptor) {
+                    cell = new EmptyValuedCell(s.getX(), s.getY(), ((RobotDescriptor)s).getValueCell());
+                } else {
+                    cell = new EmptyValuedCell(s.getX(), s.getY(), ((SmartTurtlebot) s).getCellValue());
+                }
+                ls[1] = (EmptyCell)cell;
+            }
+        }
+        if(x > 0){
+            s = grid[y][x-1];
+            if(s.getComponentType() == ComponentType.empty) {
+                ls[2] = (EmptyCell)s;
+            } else if(s.getComponentType() == ComponentType.robot) {
+                EmptyValuedCell cell;
+                if (s instanceof RobotDescriptor) {
+                    cell = new EmptyValuedCell(s.getX(), s.getY(), ((RobotDescriptor)s).getValueCell());
+                } else {
+                    cell = new EmptyValuedCell(s.getX(), s.getY(), ((SmartTurtlebot) s).getCellValue());
+                }
+                ls[2] = (EmptyCell)cell;
+            }
+        }
+        if(x<columns-1){
+            s = grid[y][x+1];
+            if(s.getComponentType() == ComponentType.empty) {
+                ls[3] = (EmptyCell)s;
+            } else if(s.getComponentType() == ComponentType.robot) {
+                EmptyValuedCell cell;
+                if (s instanceof RobotDescriptor) {
+                    cell = new EmptyValuedCell(s.getX(), s.getY(), ((RobotDescriptor)s).getValueCell());
+                } else {
+                    cell = new EmptyValuedCell(s.getX(), s.getY(), ((SmartTurtlebot) s).getCellValue());
+                }
+                ls[3] = (EmptyCell)cell;
+            }
+        }
+        return ls;
     }
 
     public EmptyCell[] getAdjacentEmptyCell(int x, int y) {

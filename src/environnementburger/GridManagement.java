@@ -136,7 +136,7 @@ public class GridManagement implements SimulationComponent {
 	}
 
 	public void initRoad(){
-		File file = new File("src\\resources\\road10.png");
+		File file = new File("src\\resources\\test10.png");
 		try
 		{
 			BufferedImage img = ImageIO.read(file);
@@ -253,6 +253,7 @@ public class GridManagement implements SimulationComponent {
 						RobotDescriptor rd = (RobotDescriptor)s;
 						jo.put("name", rd.getName());
 						jo.put("id", rd.getId()+"");
+						jo.put("value", rd.getValueCell()+"");
 					} else if (s.getComponentType()==ComponentType.empty) {
 						EmptyValuedCell emptyValuedCell = (EmptyValuedCell)s;
 						jo.put("value", emptyValuedCell.getValue());
@@ -306,6 +307,7 @@ public class GridManagement implements SimulationComponent {
 			jo.put("id", rb.getId()+"");
 			jo.put("x", rb.getX()+"");
 			jo.put("y", rb.getY()+"");
+			jo.put("value", rb.getValueCell()+"");
 			clientMqtt.publish(rb.getName()+"/position/init", jo.toJSONString());
 		}
 	}
@@ -342,9 +344,11 @@ public class GridManagement implements SimulationComponent {
 			}
 		}else if (topic.contains("configuration/nbRobot")) {
            	nbRobots = Integer.parseInt((String)content.get("nbRobot"));
+			//((EmptyValuedCell)this.grid.getCell(2,1)).setValue(500);
            	for(int i = 2; i < nbRobots+2; i++) {
-           		int[] pos = grid.locate();           	
-				grid.putSituatedComponent(new RobotDescriptor(pos, i, GridManagement.turtlebotName+i));
+           		int[] pos = grid.locate();
+				   double value =  ((EmptyValuedCell) grid.getCell(pos[1],pos[0])).getValue();
+				grid.putSituatedComponent(new RobotDescriptor(pos, i, GridManagement.turtlebotName+i, value));
 				if(display == 1) {
 					cg.setBlockColor(pos[0], pos[1], colorrobot);
 					cg.refresh();

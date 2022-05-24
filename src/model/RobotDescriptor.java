@@ -6,13 +6,20 @@ import java.util.HashMap;
 
 public class RobotDescriptor extends EntityDescriptor implements Situated{
 	
-	protected Map<String,String> properties;	
+	protected Map<String,String> properties;
+
+	double valueCell;
 	
-	public RobotDescriptor (int [] location, int id, String name) {
+	public RobotDescriptor (int [] location, int id, String name, double valueCell) {
 		super(location);
 		properties = new HashMap<String, String>();
 		properties.put("id",id+"");
 		properties.put("name",name);
+		this.valueCell=valueCell;
+	}
+
+	public double getValueCell() {
+		return valueCell;
 	}
 
 	public ComponentType getComponentType(){

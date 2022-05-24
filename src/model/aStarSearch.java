@@ -13,7 +13,7 @@ public class aStarSearch {
         int x = node.getNode().x;
         int y = node.getNode().y;
         LinkedList<aStarNode> nodes = new LinkedList<>();
-        EmptyCell[] ec = grid.getAdjacentEmptyCell(x,y);
+        EmptyCell[] ec = grid.getAdjacentEmptyRobotCell(x,y);
         for (int i=0; i<4; i++) {
             if (ec[i] != null) { //EmptyValuedCell node, aStarNode parent, double heuristique
                 //Math.abs(ecTest.getX()-this.xGoal)+ Math.abs(ecTest.getY()-this.yGoal);
