@@ -20,6 +20,7 @@ public class SmartTurtlebot extends Turtlebot{
 	protected Grid grid;
 	protected int xGoal, yGoal;
     protected ArrayList<aStarNode> path = null;
+	protected double cellValue = 1.0;
 
 
 	public SmartTurtlebot(int id, String name, int seed, int field, Message clientMqtt, int debug) {
@@ -354,8 +355,13 @@ public class SmartTurtlebot extends Turtlebot{
 		else {
 			x -= 1;
 			x = Math.max(x,0);
-		}	
-		grid.moveSituatedComponent(xo,yo,x,y);
+		}
+		double nextValue = 1.0;
+		if(grid.getCell(x,y) instanceof EmptyValuedCell){
+			nextValue = ((EmptyValuedCell) grid.getCell(x,y)).getValue();
+		}
+		cellValue+=1;
+		grid.moveSituatedComponent(xo,yo,x,y,cellValue);
 		JSONObject robotj = new JSONObject();
 		robotj.put("name", name);
 		robotj.put("id", ""+id);
@@ -363,6 +369,8 @@ public class SmartTurtlebot extends Turtlebot{
 		robotj.put("y", ""+y);
 		robotj.put("xo", ""+xo);
 		robotj.put("yo", ""+yo);
+		robotj.put("value", ""+cellValue);
+		cellValue = nextValue;
 		//System.out.println("MOVE MOVE " + xo + " " + yo + " --> " + x + " " + y);
 		clientMqtt.publish("robot/nextPosition", robotj.toJSONString());
 	}

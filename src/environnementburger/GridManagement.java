@@ -320,8 +320,9 @@ public class GridManagement implements SimulationComponent {
 			int yr = Integer.parseInt((String)content.get("y"));
 			int xor = Integer.parseInt((String)content.get("xo"));
 			int yor = Integer.parseInt((String)content.get("yo"));
+			double value = Double.parseDouble((String)content.get("value"));
 			//System.out.println("MOVE MOVE " + xor + " " + yor + " --> " + xr + " " + yr);
-			grid.moveSituatedComponent(xor,yor,xr,yr);
+			grid.moveSituatedComponent(xor,yor,xr,yr,value);
 			/*grid.swichSituatedComponent(xor,yor,xr,yr);
 			if(grid.getCell(yor,xor).getComponentType() == ComponentType.empty){
 				((EmptyValuedCell) grid.getCell(yor,xor)).setValue(((EmptyValuedCell) grid.getCell(yor,xor)).getValue()+1);
