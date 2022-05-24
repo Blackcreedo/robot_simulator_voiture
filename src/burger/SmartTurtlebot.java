@@ -1,18 +1,16 @@
 package burger;
 
+import components.Obstacle;
 import model.*;
 import components.Turtlebot;
 import mqtt.Message;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Random;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import java.util.List;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
 import java.io.IOException;
 
 public class SmartTurtlebot extends Turtlebot{
@@ -154,7 +152,7 @@ public class SmartTurtlebot extends Turtlebot{
 		this.grid = grid;
 	}
 
-	public void randomOrientation() {
+/*	public void randomOrientation() {
 		Random generator = new Random(0);
 		double d = generator.nextDouble();
 		Orientation oldo = orientation;
@@ -183,7 +181,7 @@ public class SmartTurtlebot extends Turtlebot{
 				orientation = Orientation.left;
 		}
 	}
-
+*/
 	public void newPath() {
 		aStarSearch search = new aStarSearch();
 		this.path = search.solve(this.grid, this.x, this.y, this.xGoal, this.yGoal);
@@ -224,80 +222,120 @@ public class SmartTurtlebot extends Turtlebot{
 					}*/
 				}
 			}
-			if(orientation == Orientation.up) {
-				if(jmin==3) {
-					moveForward();
+			if(jmin==null){
+				int ymax = grid.getRows()-1;
+				int xmax = grid.getColumns()-1;
+				if(orientation == Orientation.up) {
+					if(y<ymax){
+						if(grid.getCell(y+1,x)==null || grid.getCell(y+1,x) instanceof Obstacle){
+							//je sais pas trop quoi faire
+							actionr = randomOrientation(generator);
+						}else{
+							moveBackward();
+						}
+					}else{
+						moveBackward();
+					}
 				}
-				else { 
-					//randomOrientation();
-					double d = generator.nextDouble();
-					if(d < 0.5) {
-						moveLeft(1);
-						actionr = "turn_left";
-					} else {
-						moveRight(1);
-						actionr = "turn_right";
+
+				else if(orientation == Orientation.down) {
+					if(y>0){
+						if(grid.getCell(y+1,x)==null || grid.getCell(y-1,x) instanceof Obstacle){
+							//je sais pas trop quoi faire
+							actionr = randomOrientation(generator);
+						}else{
+							moveBackward();
+						}
+					}else{
+						moveBackward();
+					}
+				}
+
+				else if(orientation == Orientation.right) {
+					if(x>0){
+						if(grid.getCell(y+1,x)==null || grid.getCell(y,x-1) instanceof Obstacle){
+							//je sais pas trop quoi faire
+							actionr = randomOrientation(generator);
+						}else{
+							moveBackward();
+						}
+					}else{
+						moveBackward();
+					}
+				}
+
+				else if(orientation == Orientation.left) {
+					if(x<xmax){
+						if(grid.getCell(y+1,x)==null || grid.getCell(y,x+1) instanceof Obstacle){
+							//je sais pas trop quoi faire
+							actionr = randomOrientation(generator);
+						}else{
+							moveBackward();
+						}
+					}else{
+						moveBackward();
+					}
+				}
+
+
+
+			}else{
+				if(orientation == Orientation.up) {
+					if(jmin==3) {
+						moveForward();
+					}
+					else {
+						actionr = randomOrientation(generator);
+					}
+				}
+				else if(orientation == Orientation.down) {
+					if(jmin==2) {
+						moveForward();
+					}
+					else {
+						actionr = randomOrientation(generator);
+					}
+				}
+				else if(orientation == Orientation.right) {
+					if(jmin==1) {
+						moveForward();
+					}
+					else {
+						actionr = randomOrientation(generator);
+					}
+				}
+				else if(orientation == Orientation.left) {
+					if(jmin ==0) {
+						moveForward();
+					}
+					else {
+						actionr = randomOrientation(generator);
 					}
 				}
 			}
-			else if(orientation == Orientation.down) {
-				if(jmin==2) {
-					moveForward();
-				}
-				else {
-					//randomOrientation();
-					double d = generator.nextDouble();
-					if(d < 0.5) {
-						moveLeft(1);
-						actionr = "turn_left";
-					} else {
-						moveRight(1);
-						actionr = "turn_right";
-					}
-				}
-			}
-			else if(orientation == Orientation.right) {
-				if(jmin==1) {
-					moveForward();
-				}
-				else {
-					//randomOrientation();
-					double d = generator.nextDouble();
-					if(d < 0.5) {
-						moveLeft(1);
-						actionr = "turn_left";
-					} else {
-						moveRight(1);
-						actionr = "turn_right";
-					}
-				}
-			}
-			else if(orientation == Orientation.left) {
-				if(jmin ==0) {
-					moveForward();
-				}
-				else {
-					//randomOrientation();
-					double d = generator.nextDouble();
-					if(d < 0.5) {
-						moveLeft(1);
-						actionr = "turn_left";
-					} else {
-						moveRight(1);
-						actionr = "turn_right";
-					}
+			if(debug==2){
+				try{
+					writer.write(result + actionr);
+					writer.newLine();
+					writer.flush();
+				} catch(IOException ioe){
+					System.out.println(ioe);
 				}
 			}
 		}
-		if(debug==2){
-			try{
-				writer.write(result + actionr); 
-				writer.newLine();
-				writer.flush();
-			} catch(IOException ioe){
-				System.out.println(ioe);
-			}
+	}
+
+	private String randomOrientation(Random generator){
+		double d = generator.nextDouble();
+		String actionr;
+		if(d < 0.5) {
+			moveLeft(1);
+			actionr = "turn_left";
+		} else {
+			moveRight(1);
+			actionr = "turn_right";
 		}
+		return actionr;
 	}
 
 	public void moveLeft(int step) {
@@ -357,8 +395,8 @@ public class SmartTurtlebot extends Turtlebot{
 			x = Math.max(x,0);
 		}
 		double nextValue = 1.0;
-		if(grid.getCell(x,y) instanceof EmptyValuedCell){
-			nextValue = ((EmptyValuedCell) grid.getCell(x,y)).getValue();
+		if(grid.getCell(y,x) instanceof EmptyValuedCell){
+			nextValue = ((EmptyValuedCell) grid.getCell(y,x)).getValue();
 		}
 		cellValue+=1;
 		grid.moveSituatedComponent(xo,yo,x,y,cellValue);
@@ -379,6 +417,43 @@ public class SmartTurtlebot extends Turtlebot{
 
 
 	public void moveBackward() {
-		
+		this.path.add(0,new aStarNode((EmptyValuedCell) grid.getCell(y,x)));
+		int xo = x;
+		int yo = y;
+		if(orientation == Orientation.up) {
+			x += 1;
+			x = Math.min(x,grid.getColumns()-1);
+		}
+		else if(orientation == Orientation.left) {
+			y -= 1;
+			y = Math.max(y,0);
+		}
+		else if(orientation == Orientation.right) {
+			y += 1;
+			y = Math.min(y,grid.getRows()-1);
+		}
+		else {
+			x -= 1;
+			x = Math.max(x,0);
+		}
+		double nextValue = 1.0;
+		if(grid.getCell(y,x) instanceof EmptyValuedCell){
+			nextValue = ((EmptyValuedCell) grid.getCell(y,x)).getValue();
+		}
+		cellValue+=3; //It takes longer to drive backward
+		grid.moveSituatedComponent(xo,yo,x,y,cellValue);
+		JSONObject robotj = new JSONObject();
+		robotj.put("name", name);
+		robotj.put("id", ""+id);
+		robotj.put("x", ""+x);
+		robotj.put("y", ""+y);
+		robotj.put("xo", ""+xo);
+		robotj.put("yo", ""+yo);
+		robotj.put("value", ""+cellValue);
+		cellValue = nextValue;
+		//System.out.println("MOVE MOVE " + xo + " " + yo + " --> " + x + " " + y);
+		clientMqtt.publish("robot/nextPosition", robotj.toJSONString());
+
+
 	}
 }
