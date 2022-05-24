@@ -246,12 +246,21 @@ public class Grid {
 		return false;
 	}
 
+    public boolean moveSituatedComponent(int ox, int oy, int dx, int dy, double value) {
+        Situated sc = removeSituatedComponent(ox,oy,value);
+        if (sc != null) {
+            sc.setLocation(dx,dy);
+            putSituatedComponent(sc);
+            return true;
+        }
+        return false;
+    }
+
     public boolean swichSituatedComponent(int ox, int oy, int dx, int dy) {
         Situated sco = grid[oy][ox];
         Situated sc = grid[dy][dx];
         if (sc != null) {
             sco.setLocation(dx,dy);
-
             sc.setLocation(ox,oy);
             putSituatedComponent(sco);
             grid[sc.getY()][sc.getX()] = sc;
@@ -297,6 +306,20 @@ public class Grid {
 		}		
     	return null;
 	}
+
+    public Situated removeSituatedComponent(int x, int y, double value) {
+        if (validCoordinate(x, y) && grid[y][x].getComponentType() != ComponentType.empty) {
+            Situated sc = grid[y][x];
+            //grid[y][x] = new EmptyValuedCell(x, y, 1);
+            grid[y][x] = new EmptyValuedCell(x,y,value);
+            if(sc.getComponentType() == ComponentType.robot)
+                nbRobots--;
+            else if(sc.getComponentType() == ComponentType.obstacle)
+                nbObstacles--;
+            return sc;
+        }
+        return null;
+    }
 
     public List<Situated> get(ComponentType ct){
         List<Situated> result = new ArrayList<Situated>();
