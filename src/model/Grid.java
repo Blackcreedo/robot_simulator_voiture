@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import static java.lang.Math.max;
 import static java.lang.Math.min;
 
 /* This model class defines the grid components */
