@@ -22,6 +22,10 @@ public class RobotDescriptor extends EntityDescriptor implements Situated{
 		return valueCell;
 	}
 
+	public void setValueCell(double valueCell) {
+		this.valueCell = valueCell;
+	}
+
 	public ComponentType getComponentType(){
 		return ComponentType.robot;
 	}

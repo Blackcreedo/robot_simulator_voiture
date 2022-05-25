@@ -19,11 +19,11 @@ public class SmartTurtlebot extends Turtlebot {
 	protected int xGoal, yGoal;
 	protected ArrayList<aStarNode> path = null;
 	protected double cellValue = 1.0;
-
+	protected int shouldAstar = 0;
 	public double getCellValue() {
 		return cellValue;
 	}
-
+	protected int nbTour =0;
 	public SmartTurtlebot(int id, String name, int seed, int field, Message clientMqtt, int debug) {
 		super(id, name, seed, field, clientMqtt, debug);
 		rnd = new Random(9);
@@ -46,49 +46,64 @@ public class SmartTurtlebot extends Turtlebot {
 				String typeCell = (String) jo.get("type");
 				int xo = Integer.parseInt((String) jo.get("x"));
 				int yo = Integer.parseInt((String) jo.get("y"));
-				int[] to = new int[]{xo, yo};
-				if (typeCell.equals("robot")) {
-					int idr = Integer.parseInt((String) jo.get("id"));
-					String namer = (String) jo.get("name");
-					double value = Double.parseDouble((String) jo.get("value"));
-					grid.forceSituatedComponent(new RobotDescriptor(to, idr, namer, value));
+				if (xo==x && yo==y) {
+					Double value = Double.parseDouble((String) jo.get("value"));
+					if (value == null) {
+						System.out.printf("?");
+					}
+					this.cellValue=value;
+					Situated s = this.grid.getCell(y,x);
+					if (s instanceof RobotDescriptor) {
+						((RobotDescriptor) s).setValueCell(value);
+					}
 				} else {
-					Situated sg = grid.getCell(yo, xo);
-					Situated s;
-					if (typeCell.equals("obstacle")) {
-						//System.out.println("Add ObstacleCell");
-						s = new ObstacleDescriptor(to);
+					int[] to = new int[]{xo, yo};
+					if (typeCell.equals("robot")) {
+						int idr = Integer.parseInt((String) jo.get("id"));
+						String namer = (String) jo.get("name");
+						double value = Double.parseDouble((String) jo.get("value"));
+						grid.forceSituatedComponent(new RobotDescriptor(to, idr, namer, value));
 					} else {
-						//System.out.println("Add EmptyCell " + xo + ", " + yo);
-						//s = new EmptyValuedCell(xo,yo, 1);
-						double valueBase = (Double) jo.get("value");
-						if (((String) jo.get("inField")).equals("true")) {
-							s = new EmptyValuedCell(xo, yo, valueBase);
+						Situated sg = grid.getCell(yo, xo);
+						Situated s;
+						if (typeCell.equals("obstacle")) {
+							//System.out.println("Add ObstacleCell");
+							s = new ObstacleDescriptor(to);
 						} else {
-							Situated cell = this.grid.getCell(yo, xo);
-							int anciennete = 1;
-							double value = 1.0;
-							if (sg instanceof RobotDescriptor) {
-								cell = new EmptyValuedCell(sg.getX(), sg.getY(), ((RobotDescriptor) sg).getValueCell());
-								value = ((RobotDescriptor) sg).getValueCell();
-							} else {
-								cell = (EmptyValuedCell) this.grid.getCell(yo, xo);
-								anciennete = ((EmptyValuedCell) cell).getAnciennete();
-								value = ((EmptyValuedCell) cell).getValue();
-							}
-
-							//EmptyValuedCell cell = (EmptyValuedCell) this.grid.getCell(yo,xo);
-							if (anciennete == 5) {
+							//System.out.println("Add EmptyCell " + xo + ", " + yo);
+							//s = new EmptyValuedCell(xo,yo, 1);
+							double valueBase = (Double) jo.get("value");
+							s = new EmptyValuedCell(xo,yo,valueBase);
+							/*if (((String) jo.get("inField")).equals("true")) {
 								s = new EmptyValuedCell(xo, yo, valueBase);
 							} else {
-								s = new EmptyValuedCell(xo, yo, value);
-								((EmptyValuedCell) s).setAnciennete(anciennete + 1);
-							}
+								Situated cell = this.grid.getCell(yo, xo);
+								int anciennete = 1;
+								double value = 1.0;
+								if (sg instanceof RobotDescriptor) {
+									cell = new EmptyValuedCell(sg.getX(), sg.getY(), ((RobotDescriptor) sg).getValueCell());
+									value = ((RobotDescriptor) sg).getValueCell();
+								} else {
+									cell = (EmptyValuedCell) this.grid.getCell(yo, xo);
+									anciennete = ((EmptyValuedCell) cell).getAnciennete();
+									value = ((EmptyValuedCell) cell).getValue();
+								}
+
+								//EmptyValuedCell cell = (EmptyValuedCell) this.grid.getCell(yo,xo);
+								if (anciennete == 5) {
+									s = new EmptyValuedCell(xo, yo, valueBase);
+								} else {
+									s = new EmptyValuedCell(xo, yo, value);
+									((EmptyValuedCell) s).setAnciennete(anciennete + 1);
+								}
+							}*/
+
 						}
+						grid.forceSituatedComponent(s);
 					}
-					grid.forceSituatedComponent(s);
 				}
 			}
+			actualiserGridValues(2);
 			if (debug == 1 && this.id != 3) {
 				System.out.println("---- " + name + " ----");
 				grid.display();
@@ -200,23 +215,40 @@ public class SmartTurtlebot extends Turtlebot {
 				Situated s = grid.getCell(j, i);
 				if (s.getComponentType() == ComponentType.empty) {
 					EmptyValuedCell cell = (EmptyValuedCell) s;
-					cell.setValue(researchMatrix[j][i]);
+					cell.setValue(cell.getValue()+researchMatrix[j][i]);
 					grid.forceSituatedComponent(cell);
+				}
+				if (s.getComponentType() == ComponentType.robot) {
+					if (s instanceof SmartTurtlebot) {
+						((SmartTurtlebot) s).setCellValue(((SmartTurtlebot) s).getCellValue()+researchMatrix[j][i]);
+					} else if (s instanceof RobotDescriptor) {
+						((RobotDescriptor) s).setValueCell(((RobotDescriptor) s).getValueCell()+researchMatrix[j][i]);
+					}
 				}
 			}
 		}
 		System.out.println("Actualisation finie");
 	}
 
+	public void setCellValue(double cellValue) {
+		this.cellValue = cellValue;
+	}
+
 	public void newPath() {
-		actualiserGridValues(2);
+		//actualiserGridValues(2);
 		aStarSearch search = new aStarSearch();
 		this.path = search.solve(this.grid, this.x, this.y, this.xGoal, this.yGoal);
 	}
 
 	public void move(int step) {
-		if (this.id==8) {
-			System.out.printf("id");
+		System.out.printf("moov");
+		this.nbTour++;
+		if (this.shouldAstar==5) {
+			this.shouldAstar = 0;
+			newPath();
+			this.path.remove(0);
+		} else {
+			this.shouldAstar++;
 		}
 		if (this.path == null) {
 			newPath();

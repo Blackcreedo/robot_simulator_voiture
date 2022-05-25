@@ -136,7 +136,7 @@ public class GridManagement implements SimulationComponent {
 	}
 
 	public void initRoad(){
-		File file = new File("src\\resources\\Road50.png");
+		File file = new File("src\\resources\\Road10.png");
 		try
 		{
 			BufferedImage img = ImageIO.read(file);
@@ -218,9 +218,7 @@ public class GridManagement implements SimulationComponent {
 
 			for (int i = 0; i<grid.getRows(); i++){
 				for (int j = 0; j<grid.getColumns(); j++) {
-					if (j==x && i==y) {
-						//
-					} else if (j>=xm && j<=xM && i>=ym && i<=yM) {
+					if (j>=xm && j<=xM && i>=ym && i<=yM) {
 						researchMatrix[i][j]=1;
 					}
 				}
@@ -244,9 +242,7 @@ public class GridManagement implements SimulationComponent {
 		for (int i=0; i<grid.getColumns(); i++) {
 			for(int j = 0; j<grid.getRows(); j++) {
 				Situated s = grid.getCell(j,i);
-				if (i==x && j==y) {
-
-				} else if (researchMatrix[j][i]==1) {
+				if (researchMatrix[j][i]==1) {
 					JSONObject jo = new JSONObject();
 					jo.put("type", s.getComponentType()+"");
 					if(s.getComponentType() == ComponentType.robot) {
@@ -332,6 +328,7 @@ public class GridManagement implements SimulationComponent {
 			if(grid.getCell(yor,xor).getComponentType() == ComponentType.empty){
 				((EmptyValuedCell) grid.getCell(yor,xor)).setValue(((EmptyValuedCell) grid.getCell(yor,xor)).getValue()+1);
 			}*/
+
 			if(display == 1) {
 				//cg.setBlockColor(xor, yor, colorother);				
 				if(isGoal(xor,yor)<0) {
@@ -442,8 +439,8 @@ public class GridManagement implements SimulationComponent {
     	    columns = Integer.parseInt((String)content.get("columns"));
     	    grid = new Grid(rows, columns, seed);
 			grid.initEmpty();
-			initRoad();
-			//init();
+			//initRoad();
+			init();
         }
         /*else if(topic.contains("burger_5/position")) {
         	int x1 = Integer.parseInt((String)content.get("x1"));
