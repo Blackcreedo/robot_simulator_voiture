@@ -136,7 +136,7 @@ public class GridManagement implements SimulationComponent {
 	}
 
 	public void initRoad(){
-		File file = new File("src\\resources\\test10.png");
+		File file = new File("src\\resources\\Road50.png");
 		try
 		{
 			BufferedImage img = ImageIO.read(file);
@@ -256,6 +256,7 @@ public class GridManagement implements SimulationComponent {
 						jo.put("value", rd.getValueCell()+"");
 					} else if (s.getComponentType()==ComponentType.empty) {
 						EmptyValuedCell emptyValuedCell = (EmptyValuedCell)s;
+						jo.put("inField", "true");
 						jo.put("value", emptyValuedCell.getValue());
 					}
 					jo.put("x", s.getX()+"");
@@ -275,6 +276,7 @@ public class GridManagement implements SimulationComponent {
 						jo.put("type", s.getComponentType() + "");
 						jo.put("x", s.getX() + "");
 						jo.put("y", s.getY() + "");
+						jo.put("inField", "false");
 						jo.put("value", 1.0);
 						gt.add(jo);
 					}
@@ -284,7 +286,8 @@ public class GridManagement implements SimulationComponent {
 						jo.put("type", ComponentType.empty+"");
 						jo.put("x", s.getX()+"");
 						jo.put("y",s.getY()+"");
-						jo.put("value", value); /////////A CHANGER AAAAAAAAAAAAAAAAAA
+						jo.put("inField","false");
+						jo.put("value", ((RobotDescriptor)s).getValueCell()); /////////A CHANGER AAAAAAAAAAAAAAAAAA
 						gt.add(jo);
 					}
 				}

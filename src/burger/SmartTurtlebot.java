@@ -74,8 +74,30 @@ public class SmartTurtlebot extends Turtlebot{
 					} else {
 						//System.out.println("Add EmptyCell " + xo + ", " + yo);
 						//s = new EmptyValuedCell(xo,yo, 1);
-						double value = (Double)jo.get("value");
-						s = new EmptyValuedCell(xo,yo,value);
+						double valueBase = (Double)jo.get("value");
+						if (((String)jo.get("inField")).equals("true")) {
+							s = new EmptyValuedCell(xo,yo,valueBase);
+						} else {
+							Situated cell = this.grid.getCell(yo,xo);
+							int anciennete = 1;
+							double value=1.0;
+							if (sg instanceof RobotDescriptor) {
+								cell = new EmptyValuedCell(sg.getX(),sg.getY(), ((RobotDescriptor)sg).getValueCell());
+								value = ((RobotDescriptor) sg).getValueCell();
+							} else {
+								cell = (EmptyValuedCell) this.grid.getCell(yo,xo);
+								anciennete = ((EmptyValuedCell)cell).getAnciennete();
+								value = ((EmptyValuedCell)cell).getValue();
+							}
+
+							//EmptyValuedCell cell = (EmptyValuedCell) this.grid.getCell(yo,xo);
+							if (anciennete==5) {
+								s = new EmptyValuedCell(xo,yo,valueBase);
+							} else {
+								s = new EmptyValuedCell(xo,yo,value);
+								((EmptyValuedCell)s).setAnciennete(anciennete+1);
+							}
+						}
 					}
 					grid.forceSituatedComponent(s);
     			}
@@ -189,7 +211,51 @@ public class SmartTurtlebot extends Turtlebot{
 		}
 	}
 */
+
+
+	public void actualiserGridValues(int range) {
+		Double[][] researchMatrix = new Double[this.grid.getRows()][this.grid.getColumns()];
+		for (int i = 0; i<grid.getRows(); i++) {
+			for (int j = 0; j < grid.getColumns(); j++) {
+				researchMatrix[i][j] = 0.0;
+			}
+		}
+		for (int i=0;i<grid.getColumns();i++) {
+			for (int j=0; j<grid.getRows();j++) {
+				Situated s = grid.getCell(j,i);
+				if (s.getComponentType()==ComponentType.robot) {
+					int xs=s.getX();
+					int ys=s.getY();
+					System.out.println("ROBOT FOUND");
+					int xm=Math.max(xs-range,0);
+					int ym=Math.max(ys-range, 0);
+					int xM = Math.min(xs+range, grid.getColumns()-1);
+					int yM = Math.min(ys+range, grid.getRows()-1);
+
+					for (int k = xm; k<=xM;k++) {
+						for (int l = ym; l<=yM; l++) {
+							researchMatrix[l][k]=researchMatrix[l][k]+1.0;
+						}
+					}
+
+
+				}
+			}
+		}
+		for (int i=0; i<grid.getColumns();i++) {
+			for (int j=0; j<grid.getRows();j++) {
+				Situated s = grid.getCell(j,i);
+				if (s.getComponentType()==ComponentType.empty) {
+					EmptyValuedCell cell = (EmptyValuedCell) s;
+					cell.setValue(researchMatrix[j][i]);
+					grid.forceSituatedComponent(cell);
+				}
+			}
+		}
+		System.out.println("Actualisation finie");
+	}
 	public void newPath() {
+		actualiserGridValues(2);
 		aStarSearch search = new aStarSearch();
 		this.path = search.solve(this.grid, this.x, this.y, this.xGoal, this.yGoal);
 	}
@@ -229,9 +295,11 @@ public class SmartTurtlebot extends Turtlebot{
 					}*/
 				}
 			}
-			if(jmin==null){
+			//If a robot is in front of the robot jmin == null
+			if(jmin==null){/*
 				int ymax = grid.getRows()-1;
 				int xmax = grid.getColumns()-1;
+				// try to go backward
 				if(orientation == Orientation.up) {
 					if(y<ymax){
 						if(grid.getCell(y+1,x)==null || grid.getCell(y+1,x) instanceof Obstacle){
@@ -282,7 +350,7 @@ public class SmartTurtlebot extends Turtlebot{
 					}else{
 						moveBackward();
 					}
-				}
+				}*/
 
 
 
@@ -423,7 +491,7 @@ public class SmartTurtlebot extends Turtlebot{
 
 
 	public void moveBackward() {
-		this.path.add(0,new aStarNode((EmptyValuedCell) grid.getCell(y,x)));
+		this.path.add(0,new aStarNode(new EmptyValuedCell(x,y, 1.0)));
 		int xo = x;
 		int yo = y;
 		if(orientation == Orientation.up) {
