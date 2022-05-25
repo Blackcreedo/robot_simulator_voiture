@@ -47,7 +47,7 @@ public class RandomTurtlebot extends Turtlebot{
            			int idr = Integer.parseInt((String)jo.get("id"));
            			String namer = (String)jo.get("name");
            			if(idr != id){
-	    	    		grid.add(new RobotDescriptor(to, idr, namer));
+	    	    		grid.add(new RobotDescriptor(to, idr, namer, 1.0));
 	    	    	}
         		} else if(typeCell.equals("obstacle")){
 					//System.out.println("Add ObstacleCell");
@@ -89,7 +89,7 @@ public class RandomTurtlebot extends Turtlebot{
            			boolean findr = false;
            			String namer = (String)jo.get("name");
     	    		if(idr != id){
-	    	    		grid.add(new RobotDescriptor(to, idr, namer));
+	    	    		grid.add(new RobotDescriptor(to, idr, namer, 1.0));
 	    	    	}
         		} else if(typeCell.equals("obstacle")){
 					//System.out.println("Add ObstacleCell");

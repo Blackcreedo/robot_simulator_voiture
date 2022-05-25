@@ -42,7 +42,6 @@ public class EmptyCell implements Situated {
 	public void setLocation(int x, int y) {
 		setX(x);
 		setY(y);
-		
 	}
 
 	@SuppressWarnings("unchecked")

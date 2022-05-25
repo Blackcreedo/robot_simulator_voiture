@@ -15,7 +15,7 @@ import java.util.Map;
 
 public class TurtlebotFactory implements SimulationComponent {	
 	
-	private HashMap<String, Turtlebot> mesRobots;
+	private final HashMap<String, Turtlebot> mesRobots;
 	private final String turtlebotName = "burger_";	
 	protected Message clientMqtt;
 	protected int simulation;
@@ -72,10 +72,12 @@ public class TurtlebotFactory implements SimulationComponent {
 	}
 
 	public void schedule(int nbStep) {
+		int j=0;
 		for(int i = 0; i < nbStep; i++){
 			for(Turtlebot t: mesRobots.values()) {
 				updateGrid(t);
 				moveRobot(t);
+				j++;
 			}
 			try {
 				Thread.sleep(waittime);

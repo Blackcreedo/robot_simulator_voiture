@@ -62,7 +62,7 @@ public class RealTurtlebot extends Turtlebot{
            			}
            			if(!findr) {
 	           			String namer = (String)jo.get("name");
-    	    			grid.forceSituatedComponent(new RobotDescriptor(to, idr, namer));
+    	    			grid.forceSituatedComponent(new RobotDescriptor(to, idr, namer, 1.0));
     	    		}
         		} else {
         			Situated sg = grid.getCell(yo,xo);
@@ -114,7 +114,7 @@ public class RealTurtlebot extends Turtlebot{
         			//System.out.println("Add RobotCell");
         			int idr = Integer.parseInt((String)jo.get("id"));
         			String namer = (String)jo.get("name");
-        			s = new RobotDescriptor(to, idr, namer);
+        			s = new RobotDescriptor(to, idr, namer, 1.0);
         		}
         		else {
         			//System.out.println("Add EmptyCell " + xo + ", " + yo);

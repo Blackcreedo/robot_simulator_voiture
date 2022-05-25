@@ -1,5 +1,7 @@
 package model;
 
+import burger.SmartTurtlebot;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -28,19 +30,19 @@ public class Grid {
         int l=-1, c=-1;
         boolean locationNotFound = true;
         while(locationNotFound){
-            l = rnd.nextInt(rows);
-            c = rnd.nextInt(columns);
+            l = rnd.nextInt(rows-1);
+            c = rnd.nextInt(columns-1);
             if (grid[l][c].getComponentType() == ComponentType.obstacle) {
-                if(grid[Math.min(l+1,rows-1)][min(c+1,columns-1)].getComponentType() == ComponentType.empty) {
+                if(grid[Math.max(l-1,0)][c].getComponentType() == ComponentType.empty) { //au dessus
                     locationNotFound = false;
                 }
-                else if(grid[max(l-1,0)][min(c+1,columns-1)].getComponentType() == ComponentType.empty){
+                if(grid[Math.min(l+1,rows-1)][c].getComponentType() == ComponentType.empty){ //en dessous
                     locationNotFound = false;
                 }
-                else if(grid[min(l+1,rows-1)][max(c-1,0)].getComponentType() == ComponentType.empty){
+                if(grid[l][Math.max(c-1,0)].getComponentType() == ComponentType.empty){ // à gauche
                     locationNotFound = false;
                 }
-                else if(grid[max(l-1,0)][max(c-1,0)].getComponentType() == ComponentType.empty){
+                if(grid[l][Math.min(c+1,columns-1)].getComponentType() == ComponentType.empty){ //à droite
                     locationNotFound = false;
                 }
             }
@@ -102,6 +104,17 @@ public class Grid {
         }
     }
 
+    @Override
+    public String toString() {
+        String result = "";
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < columns; j++)
+                result=result+"   " + getCell(i, j).display();
+            result = result + "\n";
+        }
+        return result;
+    }
+
     public void initEmpty(){
         for(int i=0; i < rows;i++){
             for(int j=0; j < columns; j++){
@@ -109,6 +122,71 @@ public class Grid {
                 grid[i][j]=new EmptyValuedCell(j,i,1);
             }
         }
+    }
+    public EmptyCell[] getAdjacentEmptyRobotCell(int x, int y) {
+        EmptyCell[] ls = new EmptyCell[4];
+        ls[0] = null;
+        ls[1] = null;
+        ls[2] = null;
+        ls[3] = null;
+        Situated s;
+        if(y>0){
+            s = grid[y-1][x];
+            if(s.getComponentType() == ComponentType.empty) {
+                ls[0] = (EmptyCell)s;
+            } else if(s.getComponentType() == ComponentType.robot) {
+                EmptyValuedCell cell;
+                if (s instanceof RobotDescriptor) {
+                    cell = new EmptyValuedCell(s.getX(), s.getY(), ((RobotDescriptor)s).getValueCell());
+                } else {
+                    cell = new EmptyValuedCell(s.getX(), s.getY(), ((SmartTurtlebot) s).getCellValue());
+                }
+                ls[0] = (EmptyCell)cell;
+            }
+        }
+        if(y<rows-1) {
+            s = grid[y+1][x];
+            if(s.getComponentType() == ComponentType.empty) {
+                ls[1] = (EmptyCell)s;
+            } else if(s.getComponentType() == ComponentType.robot) {
+                EmptyValuedCell cell;
+                if (s instanceof RobotDescriptor) {
+                    cell = new EmptyValuedCell(s.getX(), s.getY(), ((RobotDescriptor)s).getValueCell());
+                } else {
+                    cell = new EmptyValuedCell(s.getX(), s.getY(), ((SmartTurtlebot) s).getCellValue());
+                }
+                ls[1] = (EmptyCell)cell;
+            }
+        }
+        if(x > 0){
+            s = grid[y][x-1];
+            if(s.getComponentType() == ComponentType.empty) {
+                ls[2] = (EmptyCell)s;
+            } else if(s.getComponentType() == ComponentType.robot) {
+                EmptyValuedCell cell;
+                if (s instanceof RobotDescriptor) {
+                    cell = new EmptyValuedCell(s.getX(), s.getY(), ((RobotDescriptor)s).getValueCell());
+                } else {
+                    cell = new EmptyValuedCell(s.getX(), s.getY(), ((SmartTurtlebot) s).getCellValue());
+                }
+                ls[2] = (EmptyCell)cell;
+            }
+        }
+        if(x<columns-1){
+            s = grid[y][x+1];
+            if(s.getComponentType() == ComponentType.empty) {
+                ls[3] = (EmptyCell)s;
+            } else if(s.getComponentType() == ComponentType.robot) {
+                EmptyValuedCell cell;
+                if (s instanceof RobotDescriptor) {
+                    cell = new EmptyValuedCell(s.getX(), s.getY(), ((RobotDescriptor)s).getValueCell());
+                } else {
+                    cell = new EmptyValuedCell(s.getX(), s.getY(), ((SmartTurtlebot) s).getCellValue());
+                }
+                ls[3] = (EmptyCell)cell;
+            }
+        }
+        return ls;
     }
 
     public EmptyCell[] getAdjacentEmptyCell(int x, int y) {
@@ -235,6 +313,29 @@ public class Grid {
 		}
 		return false;
 	}
+
+    public boolean moveSituatedComponent(int ox, int oy, int dx, int dy, double value) {
+        Situated sc = removeSituatedComponent(ox,oy,value);
+        if (sc != null) {
+            sc.setLocation(dx,dy);
+            putSituatedComponent(sc);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean swichSituatedComponent(int ox, int oy, int dx, int dy) {
+        Situated sco = grid[oy][ox];
+        Situated sc = grid[dy][dx];
+        if (sc != null) {
+            sco.setLocation(dx,dy);
+            sc.setLocation(ox,oy);
+            putSituatedComponent(sco);
+            grid[sc.getY()][sc.getX()] = sc;
+            return true;
+        }
+        return false;
+    }
 	
 	public boolean putSituatedComponent(Situated sc) {		
 		if (validCoordinate(sc.getX(), sc.getY()) && grid[sc.getY()][sc.getX()].getComponentType() == ComponentType.empty) {
@@ -273,6 +374,20 @@ public class Grid {
 		}		
     	return null;
 	}
+
+    public Situated removeSituatedComponent(int x, int y, double value) {
+        if (validCoordinate(x, y) && grid[y][x].getComponentType() != ComponentType.empty) {
+            Situated sc = grid[y][x];
+            //grid[y][x] = new EmptyValuedCell(x, y, 1);
+            grid[y][x] = new EmptyValuedCell(x,y,value);
+            if(sc.getComponentType() == ComponentType.robot)
+                nbRobots--;
+            else if(sc.getComponentType() == ComponentType.obstacle)
+                nbObstacles--;
+            return sc;
+        }
+        return null;
+    }
 
     public List<Situated> get(ComponentType ct){
         List<Situated> result = new ArrayList<Situated>();

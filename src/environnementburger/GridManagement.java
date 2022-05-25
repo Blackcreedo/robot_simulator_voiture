@@ -136,7 +136,7 @@ public class GridManagement implements SimulationComponent {
 	}
 
 	public void initRoad(){
-		File file = new File("src\\resources\\Road10.png");
+		File file = new File("src\\resources\\Road50.png");
 		try
 		{
 			BufferedImage img = ImageIO.read(file);
@@ -198,65 +198,102 @@ public class GridManagement implements SimulationComponent {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public JSONObject gridToJSONObject(int x, int y, int field) {
-			
+	public JSONObject gridToJSONObject(ArrayList<Integer[]> positions , int field) {
+
+		Integer[][] researchMatrix = new Integer[grid.getRows()][grid.getColumns()];
+
+		for (int k = 0; k<positions.size(); k++) {
+			int x =positions.get(k)[0];
+			int y = positions.get(k)[1];
+			int xm = Math.max(x-field,0);
+			int xM = Math.min(x+field,grid.getColumns()-1);
+			int ym = Math.max(y-field,0);
+			int yM = Math.min(y+field,grid.getRows()-1);
+
+			for (int i = 0; i<grid.getRows(); i++) {
+				for (int j = 0; j < grid.getColumns(); j++) {
+					researchMatrix[i][j] = 0;
+				}
+			}
+
+			for (int i = 0; i<grid.getRows(); i++){
+				for (int j = 0; j<grid.getColumns(); j++) {
+					if (j>=xm && j<=xM && i>=ym && i<=yM) {
+						researchMatrix[i][j]=1;
+					}
+				}
+			}
+		}
+		int x = positions.get(0)[0];
+		int y = positions.get(0)[1];
 		// size of the the complete grid
 		JSONObject jsongrid = new JSONObject();
 		
 		// obstacles definition
 		
 		JSONArray gt = new JSONArray();
-		int xm = Math.max(x-field,0);
+		/*int xm = Math.max(x-field,0);
 		int xM = Math.min(x+field,grid.getColumns()-1);
 		int ym = Math.max(y-field,0);
-		int yM = Math.min(y+field,grid.getRows()-1);
+		int yM = Math.min(y+field,grid.getRows()-1);*/
 
 		//System.out.println("field " + field + " x " + x + " y " + y);
 		//System.out.println("xm " + xm + " xM " + xM + " ym " + ym + " yM "+ yM);
-		for (int i=0; i<grid.getRows(); i++) {
-			for(int j = 0; j<grid.getColumns(); j++) {
+		for (int i=0; i<grid.getColumns(); i++) {
+			for(int j = 0; j<grid.getRows(); j++) {
 				Situated s = grid.getCell(j,i);
-				if(s.getComponentType()==ComponentType.obstacle) {
-					JSONObject jo = new JSONObject();
-					jo.put("type", s.getComponentType()+"");
-					jo.put("x", s.getX()+"");
-					jo.put("y", s.getY()+"");
-					gt.add(jo);
-				}
-				if(s.getComponentType()==ComponentType.empty) {
-					EmptyValuedCell emptyValuedCell = (EmptyValuedCell) s;
-					JSONObject jo = new JSONObject();
-					jo.put("type", s.getComponentType()+"");
-					jo.put("x", s.getX()+"");
-					jo.put("y", s.getY()+"");
-					jo.put("value",emptyValuedCell.getValue());
-					gt.add(jo);
-				}
-			}
-		}
-		for(int i = xm; i <= xM; i++){
-			for(int j = ym; j <= yM; j++){
-				if(i != x || j != y) {
-					Situated s = grid.getCell(j,i);
-					//System.out.println("j " + j + " i " + i + " cell " + s);
+				if (researchMatrix[j][i]==1) {
 					JSONObject jo = new JSONObject();
 					jo.put("type", s.getComponentType()+"");
 					if(s.getComponentType() == ComponentType.robot) {
 						RobotDescriptor rd = (RobotDescriptor)s;
-						jo.put("name", rd.getName());	
-						jo.put("id", rd.getId()+"");	
+						jo.put("name", rd.getName());
+						jo.put("id", rd.getId()+"");
+						jo.put("value", rd.getValueCell()+"");
+					} else if (s.getComponentType()==ComponentType.empty) {
+						EmptyValuedCell emptyValuedCell = (EmptyValuedCell)s;
+						jo.put("inField", "true");
+						jo.put("value", emptyValuedCell.getValue());
 					}
 					jo.put("x", s.getX()+"");
 					jo.put("y", s.getY()+"");
 					gt.add(jo);
+				} else {
+					if (s.getComponentType() == ComponentType.obstacle) {
+						JSONObject jo = new JSONObject();
+						jo.put("type", s.getComponentType() + "");
+						jo.put("x", s.getX() + "");
+						jo.put("y", s.getY() + "");
+						gt.add(jo);
+					}
+					if (s.getComponentType() == ComponentType.empty) {
+						EmptyValuedCell emptyValuedCell = (EmptyValuedCell) s;
+						JSONObject jo = new JSONObject();
+						jo.put("type", s.getComponentType() + "");
+						jo.put("x", s.getX() + "");
+						jo.put("y", s.getY() + "");
+						jo.put("inField", "false");
+						jo.put("value", 1.0);
+						gt.add(jo);
+					}
+					if (s.getComponentType() == ComponentType.robot) {
+						double value = 1.0;
+						JSONObject jo = new JSONObject();
+						jo.put("type", ComponentType.empty+"");
+						jo.put("x", s.getX()+"");
+						jo.put("y",s.getY()+"");
+						jo.put("inField","false");
+						jo.put("value", ((RobotDescriptor)s).getValueCell()); /////////A CHANGER AAAAAAAAAAAAAAAAAA
+						gt.add(jo);
+					}
 				}
 			}
 		}
-
 		jsongrid.put("x", x);
 		jsongrid.put("y", y);
 		jsongrid.put("field", field);
 		jsongrid.put("cells", gt);
+
 		return jsongrid;
 	}
 	
@@ -269,6 +306,7 @@ public class GridManagement implements SimulationComponent {
 			jo.put("id", rb.getId()+"");
 			jo.put("x", rb.getX()+"");
 			jo.put("y", rb.getY()+"");
+			jo.put("value", rb.getValueCell()+"");
 			clientMqtt.publish(rb.getName()+"/position/init", jo.toJSONString());
 		}
 	}
@@ -283,8 +321,14 @@ public class GridManagement implements SimulationComponent {
 			int yr = Integer.parseInt((String)content.get("y"));
 			int xor = Integer.parseInt((String)content.get("xo"));
 			int yor = Integer.parseInt((String)content.get("yo"));
+			double value = Double.parseDouble((String)content.get("value"));
 			//System.out.println("MOVE MOVE " + xor + " " + yor + " --> " + xr + " " + yr);
-			grid.moveSituatedComponent(xor,yor,xr,yr);
+			grid.moveSituatedComponent(xor,yor,xr,yr,value);
+			/*grid.swichSituatedComponent(xor,yor,xr,yr);
+			if(grid.getCell(yor,xor).getComponentType() == ComponentType.empty){
+				((EmptyValuedCell) grid.getCell(yor,xor)).setValue(((EmptyValuedCell) grid.getCell(yor,xor)).getValue()+1);
+			}*/
+
 			if(display == 1) {
 				//cg.setBlockColor(xor, yor, colorother);				
 				if(isGoal(xor,yor)<0) {
@@ -300,9 +344,11 @@ public class GridManagement implements SimulationComponent {
 			}
 		}else if (topic.contains("configuration/nbRobot")) {
            	nbRobots = Integer.parseInt((String)content.get("nbRobot"));
+			//((EmptyValuedCell)this.grid.getCell(2,1)).setValue(500);
            	for(int i = 2; i < nbRobots+2; i++) {
-           		int[] pos = grid.locate();           	
-				grid.putSituatedComponent(new RobotDescriptor(pos, i, GridManagement.turtlebotName+i));
+           		int[] pos = grid.locate();
+				   double value =  ((EmptyValuedCell) grid.getCell(pos[1],pos[0])).getValue();
+				grid.putSituatedComponent(new RobotDescriptor(pos, i, GridManagement.turtlebotName+i, value));
 				if(display == 1) {
 					cg.setBlockColor(pos[0], pos[1], colorrobot);
 					cg.refresh();
@@ -312,7 +358,7 @@ public class GridManagement implements SimulationComponent {
 				int[] pos = grid.locateGoal();
 				// ec = (EmptyCell)grid.getCell(pos[1], pos[0]);
 				goals.add(new Goal(pos[0],pos[1],-1*i));
-				grid.forceSituatedComponent(new EmptyValuedCell(pos[0], pos[1],1));
+				grid.forceSituatedComponent(new EmptyValuedCell(pos[0], pos[1],4)); //It's a bit long to park
 				if(display == 1) {
 					cg.setBlockColor(pos[0], pos[1], colorgoal);
 					cg.refresh();
@@ -326,7 +372,11 @@ public class GridManagement implements SimulationComponent {
             int fieldr = Integer.parseInt((String)content.get("field"));
             int xr = Integer.parseInt((String)content.get("x"));
             int yr = Integer.parseInt((String)content.get("y"));
-            JSONObject jo = gridToJSONObject(xr, yr, fieldr);
+
+			ArrayList<Integer[]> positions = new ArrayList<>();
+			positions.add(new Integer[]{xr,yr});
+
+            JSONObject jo = gridToJSONObject(positions, fieldr);
 			int id = Integer.parseInt((String)content.get("id"));
 			for (Goal goal : this.goals) {
 				if (goal.getRobot()==-id) {
@@ -341,8 +391,10 @@ public class GridManagement implements SimulationComponent {
 			for(Goal goal: goals){
 				if(goal.getX()==xGoal && goal.getY()==yGoal) goals.remove(goal);
 			}
+			int[] pos = {xGoal,yGoal};
 			grid.removeSituatedComponent(xGoal,yGoal);
-			cg.setBlockColor(xGoal, yGoal, colorother);
+			grid.forceSituatedComponent(new Obstacle(pos));
+			cg.setBlockColor(xGoal, yGoal, colorobstacle);
 			cg.refresh();
 		}
         else if (topic.contains("robot/grid")) {
@@ -350,7 +402,11 @@ public class GridManagement implements SimulationComponent {
             int fieldr = Integer.parseInt((String)content.get("field"));
             int xr = Integer.parseInt((String)content.get("x"));
             int yr = Integer.parseInt((String)content.get("y"));
-            JSONObject jo = gridToJSONObject(xr, yr, fieldr);
+
+
+			ArrayList<Integer[]> positions = new ArrayList<>();
+			positions.add(new Integer[]{xr,yr});
+            JSONObject jo = gridToJSONObject(positions, fieldr);
             clientMqtt.publish(nameR+"/grid/update", jo.toJSONString());
         }
 		else if (topic.contains("robot/nextPosition")) {
@@ -383,8 +439,8 @@ public class GridManagement implements SimulationComponent {
     	    columns = Integer.parseInt((String)content.get("columns"));
     	    grid = new Grid(rows, columns, seed);
 			grid.initEmpty();
-			//initRoad();
 			initRoad();
+			//init();
         }
         /*else if(topic.contains("burger_5/position")) {
         	int x1 = Integer.parseInt((String)content.get("x1"));
