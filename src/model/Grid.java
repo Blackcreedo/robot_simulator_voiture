@@ -32,16 +32,16 @@ public class Grid {
             l = rnd.nextInt(rows-1);
             c = rnd.nextInt(columns-1);
             if (grid[l][c].getComponentType() == ComponentType.obstacle) {
-                if(grid[Math.min(l+1,rows-1)][min(c+1,columns-1)].getComponentType() == ComponentType.empty) {
+                if(grid[Math.max(l-1,0)][c].getComponentType() == ComponentType.empty) { //au dessus
                     locationNotFound = false;
                 }
-                if(grid[Math.max(l-1,0)][min(c+1,columns-1)].getComponentType() == ComponentType.empty){
+                if(grid[Math.min(l+1,rows-1)][c].getComponentType() == ComponentType.empty){ //en dessous
                     locationNotFound = false;
                 }
-                if(grid[min(l+1,rows-1)][Math.max(c-1,0)].getComponentType() == ComponentType.empty){
+                if(grid[l][Math.max(c-1,0)].getComponentType() == ComponentType.empty){ // à gauche
                     locationNotFound = false;
                 }
-                if(grid[Math.max(l-1,0)][Math.max(c-1,0)].getComponentType() == ComponentType.empty){
+                if(grid[l][Math.min(c+1,columns-1)].getComponentType() == ComponentType.empty){ //à droite
                     locationNotFound = false;
                 }
             }

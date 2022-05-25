@@ -8,6 +8,7 @@ public class aStarSearch {
 
     LinkedList<aStarNode> openList;
     LinkedList<aStarNode> closedList;
+    ArrayList<EmptyValuedCell> closedListCoord;
 
     public LinkedList<aStarNode> expand(aStarNode node, Grid grid, int xGoal, int yGoal) {
         int x = node.getNode().x;
@@ -19,9 +20,17 @@ public class aStarSearch {
                 //Math.abs(ecTest.getX()-this.xGoal)+ Math.abs(ecTest.getY()-this.yGoal);
                 double heuristique = Math.abs(xGoal-ec[i].x)+Math.abs(yGoal-ec[i].y);
                 aStarNode voisin = new aStarNode((EmptyValuedCell) ec[i], node, heuristique);
-                nodes.add(voisin);
+
+
+                if (!closedListCoord.contains(voisin.getNode())) {
+                    nodes.add(voisin);
+                } else if (closedList.get(closedListCoord.indexOf(voisin.getNode())).getPathCost()> voisin.getPathCost()) {
+                    closedList.set(closedListCoord.indexOf(voisin.getNode()),voisin);
+                }
             }
         }
+        closedList.add(node);
+        closedListCoord.add(node.getNode());
         return nodes;
     }
 
@@ -31,11 +40,13 @@ public class aStarSearch {
         aStarNode solution = null;
         openList = new LinkedList<>();
         closedList = new LinkedList<>();
+        closedListCoord = new ArrayList<>();
 
         LinkedList<aStarNode> expandNodes;
         initNode.setEvaluation(Math.abs(x-xGoal)+Math.abs(y-yGoal));
 
-        closedList.add(initNode);
+        //closedList.add(initNode);
+        //closedListCoord.add(new Integer[]{initNode.getNode().getX(),initNode.getNode().getY()});
 
         expandNodes = expand(initNode, grid, xGoal, yGoal);
         openList.addAll(expandNodes);

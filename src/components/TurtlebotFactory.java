@@ -79,9 +79,6 @@ public class TurtlebotFactory implements SimulationComponent {
 				moveRobot(t);
 				System.out.println(j);
 				j++;
-				if (j==300) {
-					System.exit(0);
-				}
 			}
 			try {
 				Thread.sleep(waittime);
