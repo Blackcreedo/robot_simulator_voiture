@@ -26,7 +26,7 @@ public class SmartTurtlebot extends Turtlebot {
 
 	public SmartTurtlebot(int id, String name, int seed, int field, Message clientMqtt, int debug) {
 		super(id, name, seed, field, clientMqtt, debug);
-		rnd = new Random(seed);
+		rnd = new Random(9);
 	}
 
 	protected void init() {
@@ -49,22 +49,9 @@ public class SmartTurtlebot extends Turtlebot {
 				int[] to = new int[]{xo, yo};
 				if (typeCell.equals("robot")) {
 					int idr = Integer.parseInt((String) jo.get("id"));
-					boolean findr = false;
-					for (Situated sss : ls) {
-						if (sss != this) {
-							RobotDescriptor rd = (RobotDescriptor) sss;
-							if (rd.getId() == idr) {
-								grid.moveSituatedComponent(rd.getX(), rd.getY(), xo, yo, rd.getValueCell());
-								findr = true;
-								break;
-							}
-						}
-					}
-					if (!findr) {
-						String namer = (String) jo.get("name");
-						double value = Double.parseDouble((String) jo.get("value"));
-						grid.forceSituatedComponent(new RobotDescriptor(to, idr, namer, value));
-					}
+					String namer = (String) jo.get("name");
+					double value = Double.parseDouble((String) jo.get("value"));
+					grid.forceSituatedComponent(new RobotDescriptor(to, idr, namer, value));
 				} else {
 					Situated sg = grid.getCell(yo, xo);
 					Situated s;
@@ -179,38 +166,6 @@ public class SmartTurtlebot extends Turtlebot {
 		this.grid = grid;
 	}
 
-/*	public void randomOrientation() {
-		Random generator = new Random(0);
-		double d = generator.nextDouble();
-		Orientation oldo = orientation;
-		if(d < 0.25) {
-			if(orientation != Orientation.up) 
-				orientation = Orientation.up;
-			else 
-				orientation = Orientation.down;
-		}
-		else if(d < 0.5) {
-			if(orientation != Orientation.down) 
-				orientation = Orientation.down;
-			else 
-				orientation = Orientation.up;
-		}
-		else if(d < 0.75) {
-			if(orientation != Orientation.left) 
-				orientation = Orientation.left;
-			else 
-				orientation = Orientation.right;
-		}
-		else {
-			if(orientation != Orientation.right) 
-				orientation = Orientation.right;
-			else 
-				orientation = Orientation.left;
-		}
-	}
-*/
-
-
 	public void actualiserGridValues(int range) {
 		Double[][] researchMatrix = new Double[this.grid.getRows()][this.grid.getColumns()];
 		for (int i = 0; i < grid.getRows(); i++) {
@@ -260,11 +215,14 @@ public class SmartTurtlebot extends Turtlebot {
 	}
 
 	public void move(int step) {
+		if (this.id==8) {
+			System.out.printf("id");
+		}
 		if (this.path == null) {
 			newPath();
 			this.path.remove(0); //current node
 		}
-		Random generator = new Random();
+		Random generator = new Random(0);
 		String actionr = "move_forward";
 		String result = x + "," + y + "," + orientation + "," + grid.getCellsToString(y, x) + ",";
 		for (int i = 0; i < step; i++) {
@@ -387,12 +345,14 @@ public class SmartTurtlebot extends Turtlebot {
 	private String randomOrientation(Random generator) {
 		double d = generator.nextDouble();
 		String actionr;
-		if (d < 0.5) {
+		if (d <= 0.33) {
 			moveLeft(1);
 			actionr = "turn_left";
-		} else {
+		} else if (d>0.66) {
 			moveRight(1);
 			actionr = "turn_right";
+		} else {
+			actionr = "do_nothing";
 		}
 		return actionr;
 	}
