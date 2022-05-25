@@ -77,7 +77,6 @@ public class TurtlebotFactory implements SimulationComponent {
 			for(Turtlebot t: mesRobots.values()) {
 				updateGrid(t);
 				moveRobot(t);
-				System.out.println(j);
 				j++;
 			}
 			try {

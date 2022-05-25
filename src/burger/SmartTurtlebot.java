@@ -74,29 +74,6 @@ public class SmartTurtlebot extends Turtlebot {
 							//s = new EmptyValuedCell(xo,yo, 1);
 							double valueBase = (Double) jo.get("value");
 							s = new EmptyValuedCell(xo,yo,valueBase);
-							/*if (((String) jo.get("inField")).equals("true")) {
-								s = new EmptyValuedCell(xo, yo, valueBase);
-							} else {
-								Situated cell = this.grid.getCell(yo, xo);
-								int anciennete = 1;
-								double value = 1.0;
-								if (sg instanceof RobotDescriptor) {
-									cell = new EmptyValuedCell(sg.getX(), sg.getY(), ((RobotDescriptor) sg).getValueCell());
-									value = ((RobotDescriptor) sg).getValueCell();
-								} else {
-									cell = (EmptyValuedCell) this.grid.getCell(yo, xo);
-									anciennete = ((EmptyValuedCell) cell).getAnciennete();
-									value = ((EmptyValuedCell) cell).getValue();
-								}
-
-								//EmptyValuedCell cell = (EmptyValuedCell) this.grid.getCell(yo,xo);
-								if (anciennete == 5) {
-									s = new EmptyValuedCell(xo, yo, valueBase);
-								} else {
-									s = new EmptyValuedCell(xo, yo, value);
-									((EmptyValuedCell) s).setAnciennete(anciennete + 1);
-								}
-							}*/
 
 						}
 						grid.forceSituatedComponent(s);
@@ -115,6 +92,9 @@ public class SmartTurtlebot extends Turtlebot {
 				removeRobot.put("id", id + "");
 				removeRobot.put("xGoal", xGoal + "");
 				removeRobot.put("yGoal", yGoal + "");
+				removeRobot.put("nbTour", nbTour+"");
+				System.out.println(id+"id");
+				System.out.println(nbTour+ "nbTour");
 				clientMqtt.publish("robot/remove", removeRobot.toJSONString());
 			}
 			if (!goalReached) {
@@ -194,7 +174,6 @@ public class SmartTurtlebot extends Turtlebot {
 				if (s.getComponentType() == ComponentType.robot) {
 					int xs = s.getX();
 					int ys = s.getY();
-					System.out.println("ROBOT FOUND");
 					int xm = Math.max(xs - range, 0);
 					int ym = Math.max(ys - range, 0);
 					int xM = Math.min(xs + range, grid.getColumns() - 1);
@@ -227,7 +206,6 @@ public class SmartTurtlebot extends Turtlebot {
 				}
 			}
 		}
-		System.out.println("Actualisation finie");
 	}
 
 	public void setCellValue(double cellValue) {
@@ -241,7 +219,6 @@ public class SmartTurtlebot extends Turtlebot {
 	}
 
 	public void move(int step) {
-		System.out.printf("moov");
 		this.nbTour++;
 		if (this.shouldAstar==5) {
 			this.shouldAstar = 0;

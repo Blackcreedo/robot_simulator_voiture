@@ -35,7 +35,6 @@ public class aStarSearch {
     }
 
     public ArrayList<aStarNode> solve(Grid grid, int x, int y, int xGoal, int yGoal) {
-        System.out.println("DEB ASTAR ON " + Integer.toString(x) + Integer.toString(y));
         aStarNode initNode = new aStarNode(new EmptyValuedCell(x,y,1));
         aStarNode solution = null;
         openList = new LinkedList<>();
@@ -57,13 +56,10 @@ public class aStarSearch {
 
         while(!done) {
             if (openList.isEmpty()) {
-                System.out.println("No more nodes in open List");
                 done=true;
             } else {
                 aStarNode node = openList.pop();
-                System.out.println(String.valueOf(node.getNode().x) + String.valueOf(node.getNode().y));
                 if (node.getNode().getX()==xGoal && node.getNode().getY() == yGoal) {
-                    System.out.println("astar goalReached");
                     solution = node;
                     done=true;
                 } else {

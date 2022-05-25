@@ -136,7 +136,7 @@ public class GridManagement implements SimulationComponent {
 	}
 
 	public void initRoad(){
-		File file = new File("src\\resources\\Road10.png");
+		File file = new File("src\\resources\\Road50.png");
 		try
 		{
 			BufferedImage img = ImageIO.read(file);
@@ -293,7 +293,7 @@ public class GridManagement implements SimulationComponent {
 		jsongrid.put("y", y);
 		jsongrid.put("field", field);
 		jsongrid.put("cells", gt);
-		System.out.printf(jsongrid.toJSONString());
+
 		return jsongrid;
 	}
 	
@@ -439,8 +439,8 @@ public class GridManagement implements SimulationComponent {
     	    columns = Integer.parseInt((String)content.get("columns"));
     	    grid = new Grid(rows, columns, seed);
 			grid.initEmpty();
-			//initRoad();
-			init();
+			initRoad();
+			//init();
         }
         /*else if(topic.contains("burger_5/position")) {
         	int x1 = Integer.parseInt((String)content.get("x1"));
